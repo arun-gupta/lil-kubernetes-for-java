@@ -46,6 +46,8 @@ Explain multi-stage Dockerfile.
 
 == Build and Test using Kubernetes
 
+=== Kubernetes on Desktop
+
 Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
 
 . Ensure that Kubernetes is enabled in Docker for Mac
@@ -56,6 +58,10 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 . Configure kubectl CLI for Kubernetes cluster
 
 	kubectl config use-context docker-for-desktop
+
+=== Standalone manifests
+
+=== Helm charts
 
 . Install the Helm CLI:
 +
