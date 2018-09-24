@@ -434,6 +434,8 @@ The service will timeout in 2 seconds.
 
 == Deployment Pipeline
 
+=== Skaffold
+
 https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line utility that facilitates continuous development for Kubernetes applications. With Skaffold, you can iterate on your application source code locally then deploy it to a remote Kubernetes cluster.
 
 . Check context:
@@ -461,3 +463,6 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 . Refresh the page in browser to see the output.
 
+=== JenkinsX
+
+TBD
