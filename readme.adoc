@@ -1,0 +1,481 @@
+= Kubernetes for Java Developer
+:toc:
+
+Deploying your Java application in a Kubernetes cluster could feel like Alice in Wonderland. You keep going down the rabbit hole and don't know how to make that ride comfortable. This repository contains source code and instructions for a Lynda course that explains how a Java application can be deployed, tested, debugged and monitored in a Kubernetes cluster. In addition, it also talks about canary deployment and deployment pipeline.
+
+== Application
+
+We will use a simple Java application built using https://thorntail.io/[Thorntail] (nee WildFly Swarm). The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/resources/greeting`.
+
+The source code is in the `app` directory.
+
+== Build and Test using Maven
+
+. Show the application code in IntelliJ
+.. Show `GreetingEndpoint` class
+.. Explain that the code can be more complex
+.. Show `pom.xml`
+. Run application:
+
+	cd app
+	mvn wildfly-swarm:run
+
+. Test application
+
+	curl http://localhost:8080/resources/greeting
+
+== Build and Test using Docker
+
+. Create Docker image:
++
+	docker image build -t arungupta/greeting .
++
+Explain multi-stage Dockerfile.
++
+. Run container:
+
+	docker container run --name greeting -p 8080:8080 -d arungupta/greeting
+
+. Access application:
+
+	curl http://localhost:8080/resources/greeting
+
+. Remove container:
+
+	docker container rm -f greeting
+
+== Build and Test using Kubernetes
+
+Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
+
+. Ensure that Kubernetes is enabled in Docker for Mac
+. Show the list of contexts:
+
+    kubectl config get-contexts
+
+. Configure kubectl CLI for Kubernetes cluster
+
+	kubectl config use-context docker-for-desktop
+
+. Install the Helm CLI:
++
+	brew install kubernetes-helm
++
+If Helm CLI is already installed then use `brew upgrade kubernetes-helm`.
++
+. Check Helm version:
+
+	helm version
+
+. Install Helm in Kubernetes cluster:
++
+	helm init
++
+If Helm has already been initialized on the cluster, then you may have to upgrade Tiller:
++
+	helm init --upgrade
++
+. Install the Helm chart:
+
+	helm install --name myapp manifests/myapp
+
+. Check that the pod is running:
+
+	kubectl get pods
+
+. Check that the service is up:
+
+	kubectl get svc
+
+. Access the application:
+
+  curl http://$(kubectl get svc/myapp-greeting \
+  	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/resources/greeting
+
+== Debug Docker and Kubernetes using IntelliJ
+
+You can debug a Docker container and a Kubernetes Pod if they're running locally on your machine.
+
+=== Debug using Kubernetes
+
+This was tested using Docker for Mac/Kubernetes. Use the previously deployed Helm chart.
+
+. Show service:
++
+	kubectl get svc
+	NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                         AGE
+	greeting-service   LoadBalancer   10.101.39.100    <pending>     80:30854/TCP                    8m
+	kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP                         90d
+	myapp-greeting     LoadBalancer   10.108.104.178   localhost     8080:32189/TCP,5005:31117/TCP   4s
++
+Highlight the debug port is also forwarded.
++
+. In IntelliJ, `Run`, `Debug`, `Remote`:
++
+image::images/docker-debug1.png[]
++
+. Click on `Debug`, setup a breakpoint in the class:
++
+image::images/docker-debug2.png[]
++
+. Access the application:
+
+	curl http://$(kubectl get svc/myapp-greeting \
+		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/resources/greeting
+
+. Show the breakpoint hit in IntelliJ:
++
+image::images/docker-debug3.png[]
++
+. Delete the Helm chart:
+
+	helm delete --purge myapp
+
+=== Debug using Docker
+
+This was tested using Docker for Mac.
+
+. Run container:
+
+	docker container run --name greeting -p 8080:8080 -p 5005:5005 -d arungupta/greeting
+
+. Check container:
+
+	$ docker container ls -a
+	CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+	724313157e3c        arungupta/greeting   "java -jar app-swarm…"   3 seconds ago       Up 2 seconds        0.0.0.0:5005->5005/tcp, 0.0.0.0:8080->8080/tcp   greeting
+
+. Setup breakpoint as explained above.
+. Access the application using `curl http://localhost:8080/resources/greeting`.
+
+== Kubernetes Cluster on AWS
+
+This application will be deployed to an https://aws.amazon.com/eks/[Amazon EKS cluster]. Let's create the cluster first.
+
+. Install http://eksctl.io/[eksctl] CLI:
+
+	brew install weaveworks/tap/eksctl
+
+. Download AWS IAM Authenticator:
++
+	curl -o heptio-authenticator-aws https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator
++
+This workaround to rename the tool is required until https://github.com/weaveworks/eksctl/issues/169 is fixed. Include the directory where the CLI is downloaded to your `PATH`.
++
+. Create EKS cluster:
+
+	eksctl create cluster --name myeks --nodes 4 --region us-east-1
+	2018-09-22T22:12:22-07:00 [ℹ]  setting availability zones to [us-east-1f us-east-1d us-east-1c]
+	2018-09-22T22:12:23-07:00 [ℹ]  using "ami-0b2ae3c6bda8b5c06" for nodes
+	2018-09-22T22:12:23-07:00 [ℹ]  creating EKS cluster "myeks" in "us-east-1" region
+	2018-09-22T22:12:23-07:00 [ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
+	2018-09-22T22:12:23-07:00 [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-east-1 --name=myeks'
+	2018-09-22T22:12:23-07:00 [ℹ]  creating cluster stack "eksctl-myeks-cluster"
+	2018-09-22T22:23:12-07:00 [ℹ]  creating nodegroup stack "eksctl-myeks-nodegroup-0"
+	2018-09-22T22:26:46-07:00 [✔]  all EKS cluster resource for "myeks" had been created
+	2018-09-22T22:26:46-07:00 [✔]  saved kubeconfig as "/Users/argu/.kube/config"
+	2018-09-22T22:26:50-07:00 [ℹ]  the cluster has 0 nodes
+	2018-09-22T22:26:50-07:00 [ℹ]  waiting for at least 4 nodes to become ready
+	2018-09-22T22:27:21-07:00 [ℹ]  the cluster has 4 nodes
+	2018-09-22T22:27:21-07:00 [ℹ]  node "ip-192-168-140-209.ec2.internal" is ready
+	2018-09-22T22:27:21-07:00 [ℹ]  node "ip-192-168-144-7.ec2.internal" is ready
+	2018-09-22T22:27:21-07:00 [ℹ]  node "ip-192-168-225-70.ec2.internal" is ready
+	2018-09-22T22:27:21-07:00 [ℹ]  node "ip-192-168-81-149.ec2.internal" is ready
+	2018-09-22T22:27:21-07:00 [ℹ]  kubectl command should work with "/Users/argu/.kube/config", try 'kubectl get nodes'
+	2018-09-22T22:27:21-07:00 [✔]  EKS cluster "myeks" in "us-east-1" region is ready
+
+. Check the nodes:
+
+	kubectl get nodes
+	NAME                              STATUS    ROLES     AGE       VERSION
+	ip-192-168-140-209.ec2.internal   Ready     <none>    1m        v1.10.3
+	ip-192-168-144-7.ec2.internal     Ready     <none>    1m        v1.10.3
+	ip-192-168-225-70.ec2.internal    Ready     <none>    1m        v1.10.3
+	ip-192-168-81-149.ec2.internal    Ready     <none>    1m        v1.10.3
+
+. Get the list of configs:
++
+	kubectl config get-contexts
+	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
+	          arun@eks-gpu.us-west-2.eksctl.io   eks-gpu.us-west-2.eksctl.io   arun@eks-gpu.us-west-2.eksctl.io   
+	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
+	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop   
++
+As indicated by `*`, kubectl CLI configuration is updated to the recently created cluster.
+
+== Migrate from Dev to Prod
+
+. Explicitly set the context:
+
+    kubectl config use-context arun@myeks.us-east-1.eksctl.io
+
+. Install Helm:
+
+	kubectl -n kube-system create sa tiller
+	kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+	helm init --service-account tiller
+
+. Check the list of pods:
+
+	kubectl get pods -n kube-system
+	NAME                            READY     STATUS    RESTARTS   AGE
+	aws-node-7vs5w                  1/1       Running   0          6m
+	aws-node-8t4sb                  1/1       Running   1          6m
+	aws-node-d9jxv                  1/1       Running   1          6m
+	aws-node-sdfbd                  1/1       Running   0          6m
+	kube-dns-64b69465b4-z9rcq       3/3       Running   0          12m
+	kube-proxy-2gr82                1/1       Running   0          6m
+	kube-proxy-bn28f                1/1       Running   0          6m
+	kube-proxy-ng4xh                1/1       Running   0          6m
+	kube-proxy-rjj8x                1/1       Running   0          6m
+	tiller-deploy-895d57dd9-7z4xb   1/1       Running   0          21s
+
+. Redeploy the application:
+
+	helm install --name myapp manifests/myapp
+
+. Get the service:
++
+	kubectl get svc
+	NAME             TYPE           CLUSTER-IP       EXTERNAL-IP                                                             PORT(S)                         AGE
+	kubernetes       ClusterIP      10.100.0.1       <none>                                                                  443/TCP                         17m
+	myapp-greeting   LoadBalancer   10.100.241.250   a8713338abef211e8970816cb629d414-71232674.us-east-1.elb.amazonaws.com   8080:32626/TCP,5005:30739/TCP   2m
++
+It shows the port `8080` and `5005` are published and an Elastic Load Balancer is provisioned. It takes about three minutes for the load balancer to be ready.
++
+. Access the application:
+
+	curl http://$(kubectl get svc/myapp-greeting \
+		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/resources/greeting
+
+. Delete the application:
+
+	helm delete --purge myapp
+
+== Istio
+
+https://istio.io/[Istio] is is a layer 4/7 proxy that routes and load balances traffic over HTTP, WebSocket, HTTP/2, gRPC and supports application protocols such as MongoDB and Redis. Istio uses the Envoy proxy to manage all inbound/outbound traffic in the service mesh.
+
+Istio has a wide variety of traffic management features that live outside the application code, such as A/B testing, phased/canary rollouts, failure recovery, circuit breaker, layer 7 routing and policy enforcement (all provided by the Envoy proxy). Istio also supports ACLs, rate limits, quotas, authentication, request tracing and telemetry collection using its Mixer component. The goal of the Istio project is to support traffic management and security of microservices without requiring any changes to the application; it does this by injecting a sidecar into your pod that handles all network communications.
+
+More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-eks/[Getting Started with Istio on Amazon EKS].
+
+=== Install and Configure
+
+. Download Istio:
+
+	curl -L https://git.io/getLatestIstio | sh -
+	cd istio-1.*
+
+. Include `istio-1.*/bin` directory in `PATH`
+. Install Istio on Amazon EKS:
+
+	helm install \
+		--wait \
+		--name istio \
+		--namespace istio-system \
+		install/kubernetes/helm/istio \
+		--set global.configValidation=false \
+		--set sidecarInjectorWebhook.enabled=false \
+		--set tracing.enabled=true \
+		--set grafana.enabled=true
+
+. Verify:
++
+	kubectl get pods -n istio-system
+	NAME                                        READY     STATUS    RESTARTS   AGE
+	grafana-75485f89b9-n4skw                    1/1       Running   0          1m
+	istio-citadel-84fb7985bf-bv2tm              1/1       Running   0          1m
+	istio-egressgateway-bd9fb967d-qls6z         1/1       Running   0          1m
+	istio-galley-655c4f9ccd-nblsb               1/1       Running   0          1m
+	istio-ingressgateway-688865c5f7-xmm46       1/1       Running   0          1m
+	istio-pilot-6cd69dc444-5j8kv                2/2       Running   0          1m
+	istio-policy-6b9f4697d-fpr9g                2/2       Running   0          1m
+	istio-statsd-prom-bridge-7f44bb5ddb-rlt77   1/1       Running   0          1m
+	istio-telemetry-6b5579595f-f7bd7            2/2       Running   0          1m
+	istio-tracing-ff94688bb-47zlc               1/1       Running   0          1m
+	prometheus-84bd4b9796-lrkkv                 1/1       Running   0          1m
++
+Check that both Tracing and Grafana add-ons are enabled.
++
+. From the repo's main directory, deploy pod with sidecar:
+
+	kubectl apply -f <(istioctl kube-inject -f manifests/app.yaml)
+
+. Check pods and note that it has two containers (one for the application and one for the sidecar):
+
+	kubectl get pods
+	NAME                       READY     STATUS    RESTARTS   AGE
+	greeting-d4f55c7ff-6gz8b   2/2       Running   0          5s
+
+. Get list of containers in the pod:
+
+	kubectl get pods -l app=greeting -o jsonpath={.items[*].spec.containers[*].name}
+	greeting istio-proxy
+
+. Get response:
++
+  curl http://$(kubectl get svc/greeting \
+  	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/resources/greeting
++
+It takes about three minutes for the ELB to be ready to receive requests.
+
+=== Traffic Shifting
+
+. Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
+
+  kubectl delete -f manifests/app.yaml
+  kubectl apply -f <(istioctl kube-inject -f manifests/app-hello-howdy.yaml)
+
+. Check the list of pods:
+
+	kubectl get pods
+	NAME                              READY     STATUS    RESTARTS   AGE
+	greeting-hello-69cc7684d-7g4bx    2/2       Running   0          1m
+	greeting-howdy-788b5d4b44-g7pml   2/2       Running   0          1m
+
+. Access application multipe times to see different response:
+
+  for i in {1..10}
+  do
+  	curl -q http://$(kubectl get svc/greeting -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/resources/greeting
+  	echo
+  done
+  
+. Setup an Istio rule to split traffic between 75% to `Hello` and 25% to `Howdy` version of the `greeting` service:
+
+  kubectl apply -f manifests/greeting-rule-75-25.yaml
+
+. Invoke the service again to see the traffic split between two services.
+
+=== Canary Deployment
+
+. Setup an Istio rule to divert 10% traffic to canary:
+
+  kubectl delete -f manifests/greeting-rule-75-25.yaml
+  kubectl apply -f manifests/greeting-canary.yaml
+
+. Access application multipe times to see ~10% greeting messages with `Howdy`:
+
+  for i in {1..50}
+  do
+  	curl -q http://$(kubectl get svc/greeting-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/resources/greeting
+  	echo
+  done
+
+=== Distributed Tracing
+
+Istio is deployed as a sidecar proxy into each of your pods; this means it can see and monitor all the traffic flows between your microservices and generate a graphical representation of your mesh traffic. We’ll use the application you deployed in the previous step to demonstrate this.
+
+By default, tracing is disabled. `--set tracing.enabled=true` was used during Istio installation to ensure tracing was enabled.
+
+Setup access to the tracing dashboard URL using port-forwarding:
+
+	kubectl port-forward \
+		-n istio-system \
+		$(kubectl get pod \
+			-n istio-system \
+			-l app=jaeger \
+			-o jsonpath='{.items[0].metadata.name}') 16686:16686 &
+
+Access the dashboard at http://localhost:16686.
+
+image::images/istio-dag.png[]
+
+=== Metrics using Grafana
+
+. By default, Grafana is disabled. `--set grafana.enabled=true` was used during Istio installation to ensure Grafana was enabled. Alternatively, the Grafana add-on can be installed as:
+
+	kubectl apply -f install/kubernetes/addons/grafana.yaml
+
+. Verify:
+
+	kubectl get pods -l app=grafana -n istio-system
+	NAME                       READY     STATUS    RESTARTS   AGE
+	grafana-75485f89b9-n4skw   1/1       Running   0          10m
+
+. Forward Istio dashboard using Grafana UI:
+
+	kubectl -n istio-system \
+		port-forward $(kubectl -n istio-system \
+			get pod -l app=grafana \
+			-o jsonpath='{.items[0].metadata.name}') 3000:3000 &
+
+. View Istio dashboard http://localhost:3000/d/1/istio-dashboard?
+
+. Invoke the endpoint:
+
+	curl http://$(kubectl get svc/greeting \
+		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/resources/greeting
+
+image::images/istio-dashboard.png[]
+
+=== Timeouts
+
+Delays and timeouts can be injected in services.
+
+. Deploy the application:
+
+   kubectl delete -f manifests/app.yaml
+   kubectl apply -f <(istioctl kube-inject -f manifests/app-ingress.yaml)
+
+. Add a 5 seconds delay to calls to the service:
+
+    kubectl apply -f manifests/greeting-delay.yaml
+
+. Invoke the service using a 2 seconds timeout:
+
+	export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+	export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
+	export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+	curl --connect-timeout 2 http://$GATEWAY_URL/resources/greeting
+
+The service will timeout in 2 seconds.
+
+== Chaos using kube-monkey
+
+https://github.com/asobti/kube-monkey[kube-monkey] is an implementation of Netflix's Chaos Monkey for Kubernetes clusters. It randomly deletes Kubernetes pods in the cluster encouraging and validating the development of failure-resilient services.
+
+. Create kube-monkey configuration:
+
+	kubectl apply -f manifests/kube-monkey-configmap.yaml 
+
+. Run kube-monkey:
+
+	kubectl apply -f manifests/kube-monkey-deployment.yaml
+
+. Deploy an app that opts-in for pod deletion:
+
+	kubectl apply -f manifests/app-kube-monkey.yaml
+
+This application agrees to kill up to 40% of pods. The schedule of deletion is defined by kube-monkey configuration and is defined to be between 10am and 4pm on weekdays.
+
+== Deployment Pipeline
+
+https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line utility that facilitates continuous development for Kubernetes applications. With Skaffold, you can iterate on your application source code locally then deploy it to a remote Kubernetes cluster.
+
+. Check context:
+
+	kubectl config get-contexts
+	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
+	          arun@eks-gpu.us-west-2.eksctl.io   eks-gpu.us-west-2.eksctl.io   arun@eks-gpu.us-west-2.eksctl.io   
+	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
+	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop
+
+. Change to use local Kubernetes cluster:
+
+	kubectl config use-context docker-for-desktop
+
+. Download Skaffold:
+
+	curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64 \
+		&& chmod +x skaffold
+
+. Open http://localhost:8080/resources/greeting in browser. This will show the page is not available.
+. Run Skaffold in the application directory:
+
+    cd app
+    skaffold dev
+
+. Refresh the page in browser to see the output.
+
