@@ -114,7 +114,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 	kubectl delete deployment/<>
 	kubectl delete svc/<>
 
-=== Chapter 5: Deploy to Kubenetes using Helm charts
+== Chapter 5: Deploy to Kubenetes using Helm charts
 
 **Slides**
 
@@ -542,6 +542,6 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 . Refresh the page in browser to see the output.
 
-== Chapter 16: JenkinsX
+== Chapter 16: Deployment Pipeline using JenkinsX
 
 TBD
