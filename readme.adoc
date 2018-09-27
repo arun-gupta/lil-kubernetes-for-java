@@ -3,13 +3,11 @@
 
 Deploying your Java application in a Kubernetes cluster could feel like Alice in Wonderland. You keep going down the rabbit hole and don't know how to make that ride comfortable. This repository contains source code and instructions for a Lynda course that explains how a Java application can be deployed, tested, debugged and monitored in a Kubernetes cluster. In addition, it also talks about canary deployment and deployment pipeline.
 
-== Application
+== Chapter 1: Application, Build and Test using Maven
 
 We will use a simple Java application built using https://thorntail.io/[Thorntail] (nee WildFly Swarm). The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/resources/greeting`.
 
 The source code is in the `app` directory.
-
-== Build and Test using Maven
 
 . Show the application code in IntelliJ
 .. Show `GreetingEndpoint` class
@@ -24,7 +22,19 @@ The source code is in the `app` directory.
 
 	curl http://localhost:8080/resources/greeting
 
-== Build and Test using Docker
+== Chapter 2: Build and Test using Docker
+
+**Slides**
+
+. Explain the Docker workflow of CLI, Engine and Registry
+. Concepts to be explained:
+.. Building an image
+.. Build context
+.. Image tagging
+.. Running a container
+.. Port forwarding
+
+**Code**
 
 . Create Docker image:
 +
@@ -44,7 +54,20 @@ Explain multi-stage Dockerfile.
 
 	docker container rm -f greeting
 
-== Build and Test using Kubernetes
+== Chapter 3: Kubernetes concepts and local cluster
+
+**Slides**
+
+. Cluster concepts
+.. Control plane
+.. Data plane
+. Resources
+.. Pod, sample config file
+.. Deployment, sample config file
+.. Daemonset, sample config file
+.. Others
+
+**Code**
 
 === Kubernetes on Desktop
 
@@ -59,9 +82,46 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl config use-context docker-for-desktop
 
-=== Standalone manifests
 
-=== Helm charts
+== Chapter 4: Deploy to Kubernetes using standalone manifests
+
+**Code**
+
+. Deploy application to Kubernetes using separate manifests:
+
+	kubectl create -f <>
+
+. Check deployment and service:
+
+	kubectl get deployment
+	kubectl get svc
+
+. Delete deployment and service:
+
+	kubectl delete -f <>
+
+. Deploy application to Kubernetes using a single manifest:
+
+	kubectl create -f <>
+
+. Check deployment and service:
+
+	kubectl get deployment
+	kubectl get svc
+
+. Delete deployment and service (a different way to delete):
+
+	kubectl delete deployment/<>
+	kubectl delete svc/<>
+
+=== Chapter 5: Deploy to Kubenetes using Helm charts
+
+**Slides**
+
+. Explain what is Helm chart?
+. Key concepts - client, tiller, charts
+
+**Code**
 
 . Install the Helm CLI:
 +
@@ -98,7 +158,9 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
   curl http://$(kubectl get svc/myapp-greeting \
   	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/resources/greeting
 
-== Debug Docker and Kubernetes using IntelliJ
+== Chapter 6: Debug Kubernetes Deployment using IntelliJ
+
+**Code**
 
 You can debug a Docker container and a Kubernetes Pod if they're running locally on your machine.
 
@@ -137,6 +199,9 @@ image::images/docker-debug3.png[]
 
 	helm delete --purge myapp
 
+
+**Only for information, not included in the video**
+
 === Debug using Docker
 
 This was tested using Docker for Mac.
@@ -154,7 +219,13 @@ This was tested using Docker for Mac.
 . Setup breakpoint as explained above.
 . Access the application using `curl http://localhost:8080/resources/greeting`.
 
-== Kubernetes Cluster on AWS
+== Chapter 7: Kubernetes Cluster on AWS
+
+**Slides**
+
+. Intro to Amazon EKS
+
+**Code**
 
 This application will be deployed to an https://aws.amazon.com/eks/[Amazon EKS cluster]. Let's create the cluster first.
 
@@ -209,7 +280,9 @@ This workaround to rename the tool is required until https://github.com/weavewor
 +
 As indicated by `*`, kubectl CLI configuration is updated to the recently created cluster.
 
-== Migrate from Dev to Prod
+== Chapter 8: Migrate our application to Kubernetes cluster on AWS
+
+**Code**
 
 . Explicitly set the context:
 
@@ -258,15 +331,27 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 
 	helm delete --purge myapp
 
-== Istio
+== Chapter 9: Introduction to Istio Service Mesh
+
+**Slides**
+
+. What problem is solved by service mesh?
+. Envoy
+. What is Istio?
+. Istio components - Pilot, Mixer, Citadel
+. Istio resources
+.. Traffic shifting
+.. Canary deployment
 
 https://istio.io/[Istio] is is a layer 4/7 proxy that routes and load balances traffic over HTTP, WebSocket, HTTP/2, gRPC and supports application protocols such as MongoDB and Redis. Istio uses the Envoy proxy to manage all inbound/outbound traffic in the service mesh.
 
 Istio has a wide variety of traffic management features that live outside the application code, such as A/B testing, phased/canary rollouts, failure recovery, circuit breaker, layer 7 routing and policy enforcement (all provided by the Envoy proxy). Istio also supports ACLs, rate limits, quotas, authentication, request tracing and telemetry collection using its Mixer component. The goal of the Istio project is to support traffic management and security of microservices without requiring any changes to the application; it does this by injecting a sidecar into your pod that handles all network communications.
 
+== Chapter 10: Install and Configure Istio on EKS
+
 More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-eks/[Getting Started with Istio on Amazon EKS].
 
-=== Install and Configure
+**Code**
 
 . Download Istio:
 
@@ -326,7 +411,7 @@ Check that both Tracing and Grafana add-ons are enabled.
 +
 It takes about three minutes for the ELB to be ready to receive requests.
 
-=== Traffic Shifting
+== Chapter 11: Traffic Shifting using Istio
 
 . Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
 
@@ -354,7 +439,7 @@ It takes about three minutes for the ELB to be ready to receive requests.
 
 . Invoke the service again to see the traffic split between two services.
 
-=== Canary Deployment
+== Chapter 12: Canary Deployment using Istio
 
 . Setup an Istio rule to divert 10% traffic to canary:
 
@@ -369,7 +454,9 @@ It takes about three minutes for the ELB to be ready to receive requests.
   	echo
   done
 
-=== Distributed Tracing
+== Chapter 13: Distributed Tracing using Istio
+
+**Code**
 
 Istio is deployed as a sidecar proxy into each of your pods; this means it can see and monitor all the traffic flows between your microservices and generate a graphical representation of your mesh traffic. We’ll use the application you deployed in the previous step to demonstrate this.
 
@@ -388,7 +475,9 @@ Access the dashboard at http://localhost:16686.
 
 image::images/istio-dag.png[]
 
-=== Metrics using Grafana
+== Chapter 14: Metrics using Grafana
+
+**Code**
 
 . By default, Grafana is disabled. `--set grafana.enabled=true` was used during Istio installation to ensure Grafana was enabled. Alternatively, the Grafana add-on can be installed as:
 
@@ -416,31 +505,15 @@ image::images/istio-dag.png[]
 
 image::images/istio-dashboard.png[]
 
-=== Timeouts
+== Chapter 15: Deployment Pipeline using Skaffold
 
-Delays and timeouts can be injected in services.
+**Slides**
 
-. Deploy the application:
+. What is Skaffold?
+. Key benefits
+. Workflow
 
-   kubectl delete -f manifests/app.yaml
-   kubectl apply -f <(istioctl kube-inject -f manifests/app-ingress.yaml)
-
-. Add a 5 seconds delay to calls to the service:
-
-    kubectl apply -f manifests/greeting-delay.yaml
-
-. Invoke the service using a 2 seconds timeout:
-
-	export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-	export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
-	export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
-	curl --connect-timeout 2 http://$GATEWAY_URL/resources/greeting
-
-The service will timeout in 2 seconds.
-
-== Deployment Pipeline
-
-=== Skaffold
+**Code**
 
 https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line utility that facilitates continuous development for Kubernetes applications. With Skaffold, you can iterate on your application source code locally then deploy it to a remote Kubernetes cluster.
 
@@ -469,6 +542,6 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 . Refresh the page in browser to see the output.
 
-=== JenkinsX
+== Chapter 16: JenkinsX
 
 TBD
