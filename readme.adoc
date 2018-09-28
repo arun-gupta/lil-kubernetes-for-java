@@ -106,7 +106,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl get nodes
 
-== Deploy to Kubernetes using standalone manifests
+=== Deploy to Kubernetes using standalone manifests
 
 **Code**
 
@@ -137,7 +137,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 	kubectl delete deployment/<>
 	kubectl delete svc/<>
 
-== Introduction to Helm charts
+=== Introduction to Helm charts
 
 **Slides**
 
@@ -184,13 +184,11 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
   curl http://$(kubectl get svc/myapp-greeting \
   	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/resources/greeting
 
-== Debug Kubernetes Deployment using IntelliJ
+=== Debug Kubernetes Deployment using IntelliJ
 
 **Code**
 
 You can debug a Docker container and a Kubernetes Pod if they're running locally on your machine.
-
-=== Debug using Kubernetes
 
 This was tested using Docker for Mac/Kubernetes. Use the previously deployed Helm chart.
 
@@ -228,7 +226,7 @@ image::images/docker-debug3.png[]
 
 **Only for information, not included in the video**
 
-=== Debug using Docker
+==== Debug using Docker
 
 This was tested using Docker for Mac.
 
@@ -469,7 +467,7 @@ It takes about three minutes for the ELB to be ready to receive requests.
 
 . Invoke the service again to see the traffic split between two services.
 
-== Chapter 12: Canary Deployment using Istio
+=== Canary Deployment using Istio
 
 . Setup an Istio rule to divert 10% traffic to canary:
 
