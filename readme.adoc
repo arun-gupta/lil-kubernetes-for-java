@@ -3,7 +3,18 @@
 
 Deploying your Java application in a Kubernetes cluster could feel like Alice in Wonderland. You keep going down the rabbit hole and don't know how to make that ride comfortable. This repository contains source code and instructions for a Lynda course that explains how a Java application can be deployed, tested, debugged and monitored in a Kubernetes cluster. In addition, it also talks about canary deployment and deployment pipeline.
 
-== Chapter 1: Application, Build and Test using Maven
+== Chapter 1: Introduction and Application
+
+=== Introduction
+
+**Slides**
+
+. What is Kubernetes?
+. Why Java and Kubernetes?
+. Typical choices of building Java applications
+. What is the typical workflow for Java + k8s?
+
+=== Build and Test Application using Maven
 
 We will use a simple Java application built using https://thorntail.io/[Thorntail] (nee WildFly Swarm). The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/resources/greeting`.
 
@@ -22,7 +33,9 @@ The source code is in the `app` directory.
 
 	curl http://localhost:8080/resources/greeting
 
-== Chapter 2: Build and Test using Docker
+== Chapter 2: Packaging Application using Docker
+
+=== Introduction to Docker
 
 **Slides**
 
@@ -33,6 +46,8 @@ The source code is in the `app` directory.
 .. Image tagging
 .. Running a container
 .. Port forwarding
+
+=== Build Docker image
 
 **Code**
 
@@ -54,7 +69,9 @@ Explain multi-stage Dockerfile.
 
 	docker container rm -f greeting
 
-== Chapter 3: Kubernetes concepts and local cluster
+== Chapter 3: Kubernetes Concepts and Getting Started
+
+=== Kubernetes concepts
 
 **Slides**
 
@@ -66,10 +83,13 @@ Explain multi-stage Dockerfile.
 .. Deployment, sample config file
 .. Daemonset, sample config file
 .. Others
-
-**Code**
+. Getting started
+.. Minikube, Docker for Desktop
+.. Cloud
 
 === Kubernetes on Desktop
+
+**Code**
 
 Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
 
@@ -82,8 +102,11 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl config use-context docker-for-desktop
 
+. Check the nodes:
 
-== Chapter 4: Deploy to Kubernetes using standalone manifests
+	kubectl get nodes
+
+== Deploy to Kubernetes using standalone manifests
 
 **Code**
 
@@ -114,12 +137,15 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 	kubectl delete deployment/<>
 	kubectl delete svc/<>
 
-== Chapter 5: Deploy to Kubenetes using Helm charts
+== Introduction to Helm charts
 
 **Slides**
 
 . Explain what is Helm chart?
 . Key concepts - client, tiller, charts
+. Sample Helm chart
+
+=== Deploy Application to Kubernetes using Helm Charts
 
 **Code**
 
@@ -158,7 +184,7 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
   curl http://$(kubectl get svc/myapp-greeting \
   	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/resources/greeting
 
-== Chapter 6: Debug Kubernetes Deployment using IntelliJ
+== Debug Kubernetes Deployment using IntelliJ
 
 **Code**
 
@@ -219,11 +245,15 @@ This was tested using Docker for Mac.
 . Setup breakpoint as explained above.
 . Access the application using `curl http://localhost:8080/resources/greeting`.
 
-== Chapter 7: Kubernetes Cluster on AWS
+== Chapter 4: Kubernetes Cluster on AWS
+
+=== Introduction to Amazon EKS
 
 **Slides**
 
 . Intro to Amazon EKS
+
+=== Create an EKS cluster
 
 **Code**
 
@@ -280,7 +310,7 @@ This workaround to rename the tool is required until https://github.com/weavewor
 +
 As indicated by `*`, kubectl CLI configuration is updated to the recently created cluster.
 
-== Chapter 8: Migrate our application to Kubernetes cluster on AWS
+=== Migrate Application to Kubernetes Cluster on AWS
 
 **Code**
 
@@ -331,7 +361,9 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 
 	helm delete --purge myapp
 
-== Chapter 9: Introduction to Istio Service Mesh
+== Chapter 5: Istio Service Mesh
+
+=== Introduction to Istio Service Mesh
 
 **Slides**
 
@@ -342,12 +374,10 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 . Istio resources
 .. Traffic shifting
 .. Canary deployment
+.. Distributed Tracing
+.. Telemetry
 
-https://istio.io/[Istio] is is a layer 4/7 proxy that routes and load balances traffic over HTTP, WebSocket, HTTP/2, gRPC and supports application protocols such as MongoDB and Redis. Istio uses the Envoy proxy to manage all inbound/outbound traffic in the service mesh.
-
-Istio has a wide variety of traffic management features that live outside the application code, such as A/B testing, phased/canary rollouts, failure recovery, circuit breaker, layer 7 routing and policy enforcement (all provided by the Envoy proxy). Istio also supports ACLs, rate limits, quotas, authentication, request tracing and telemetry collection using its Mixer component. The goal of the Istio project is to support traffic management and security of microservices without requiring any changes to the application; it does this by injecting a sidecar into your pod that handles all network communications.
-
-== Chapter 10: Install and Configure Istio on EKS
+=== Install and Configure Istio on EKS
 
 More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-eks/[Getting Started with Istio on Amazon EKS].
 
@@ -411,7 +441,7 @@ Check that both Tracing and Grafana add-ons are enabled.
 +
 It takes about three minutes for the ELB to be ready to receive requests.
 
-== Chapter 11: Traffic Shifting using Istio
+=== Traffic Shifting using Istio
 
 . Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
 
@@ -454,7 +484,7 @@ It takes about three minutes for the ELB to be ready to receive requests.
   	echo
   done
 
-== Chapter 13: Distributed Tracing using Istio
+=== Distributed Tracing using Istio
 
 **Code**
 
@@ -475,7 +505,7 @@ Access the dashboard at http://localhost:16686.
 
 image::images/istio-dag.png[]
 
-== Chapter 14: Metrics using Grafana
+=== Telemetry using Istio
 
 **Code**
 
@@ -505,13 +535,24 @@ image::images/istio-dag.png[]
 
 image::images/istio-dashboard.png[]
 
-== Chapter 15: Deployment Pipeline using Skaffold
+== Chapter 6: Deployment Pipelines
+
+=== Introduction to Deployment Pipelines
 
 **Slides**
 
+. What is deployment pipeline?
 . What is Skaffold?
-. Key benefits
-. Workflow
+.. Key benefits
+.. Workflow
+. Code Pipeline + Code Commit
+.. Key benefits
+.. Workflow
+. JenkinsX
+.. Key benefits
+.. Workflow
+
+=== Skaffold
 
 **Code**
 
@@ -542,6 +583,10 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 . Refresh the page in browser to see the output.
 
-== Chapter 16: Deployment Pipeline using JenkinsX
+=== Code Pipeline + Code Commit
+
+TBD
+
+=== Deployment Pipeline using JenkinsX
 
 TBD
