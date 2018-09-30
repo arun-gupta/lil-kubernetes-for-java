@@ -39,7 +39,13 @@ The source code is in the `app` directory.
 
 **Slides**
 
+. Why Docker?
 . Explain the Docker workflow of CLI, Engine and Registry
+
+=== Docker image and container
+
+**Slides**
+
 . Concepts to be explained:
 .. Building an image
 .. Build context
@@ -47,7 +53,7 @@ The source code is in the `app` directory.
 .. Running a container
 .. Port forwarding
 
-=== Build Docker image
+=== Build Docker image and run container
 
 **Code**
 
@@ -71,13 +77,18 @@ Explain multi-stage Dockerfile.
 
 == Chapter 3: Kubernetes Concepts and Getting Started
 
-=== Kubernetes concepts
+=== Introduction to Kubernetes
 
 **Slides**
 
+. What is Kubernetes?
 . Cluster concepts
 .. Control plane
 .. Data plane
+. Introduce kubectl
+
+=== Kubernetes resources
+
 . Resources
 .. Pod, sample config file
 .. Deployment, sample config file
@@ -102,9 +113,17 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl config use-context docker-for-desktop
 
+. Check the version:
+
+	kubectl version
+
 . Check the nodes:
 
 	kubectl get nodes
+
+. Check the resources:
+
+	kubectl api-resources
 
 === Deploy to Kubernetes using standalone manifests
 
@@ -118,6 +137,10 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl get deployment
 	kubectl get svc
+
+. Access the application:
+
+	curl http://localhost:8080/resources/greeting
 
 . Delete deployment and service:
 
@@ -481,27 +504,6 @@ It takes about three minutes for the ELB to be ready to receive requests.
   	curl -q http://$(kubectl get svc/greeting-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/resources/greeting
   	echo
   done
-
-=== Distributed Tracing using Istio
-
-**Code**
-
-Istio is deployed as a sidecar proxy into each of your pods; this means it can see and monitor all the traffic flows between your microservices and generate a graphical representation of your mesh traffic. We’ll use the application you deployed in the previous step to demonstrate this.
-
-By default, tracing is disabled. `--set tracing.enabled=true` was used during Istio installation to ensure tracing was enabled.
-
-Setup access to the tracing dashboard URL using port-forwarding:
-
-	kubectl port-forward \
-		-n istio-system \
-		$(kubectl get pod \
-			-n istio-system \
-			-l app=jaeger \
-			-o jsonpath='{.items[0].metadata.name}') 16686:16686 &
-
-Access the dashboard at http://localhost:16686.
-
-image::images/istio-dag.png[]
 
 === Telemetry using Istio
 
