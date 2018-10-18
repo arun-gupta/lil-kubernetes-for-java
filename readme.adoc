@@ -417,8 +417,6 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 		--name istio \
 		--namespace istio-system \
 		install/kubernetes/helm/istio \
-		--set global.configValidation=false \
-		--set sidecarInjectorWebhook.enabled=false \
 		--set tracing.enabled=true \
 		--set grafana.enabled=true
 
