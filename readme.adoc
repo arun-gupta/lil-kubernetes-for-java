@@ -57,6 +57,11 @@ The source code is in the `app` directory.
 
 **Code**
 
+. Create `m2.tar.gz`:
+
+	mvn -Dmaven.repo.local=./m2 clean package
+	tar cvf m2.tar.gz ./m2
+
 . Create Docker image:
 +
 	docker image build -t arungupta/greeting .
