@@ -1,0 +1,14 @@
+greeting:
+  image: arungupta/greeting
+  replicaCount: 1
+
+image:
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  externalPort: 8080
+  internalPort: 8080
+  externalDebugPort: 5005
+  internalDebugPort: 5005
