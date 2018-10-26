@@ -42,7 +42,7 @@ The source code is in the `app` directory.
 . Why Docker?
 . Explain the Docker workflow of CLI, Engine and Registry
 
-=== Docker image and container
+=== Docker Image and Container
 
 **Slides**
 
@@ -56,7 +56,7 @@ The source code is in the `app` directory.
 .. Run a container
 .. Port forward
 
-=== Build Docker image and run container
+=== Build Docker Image and Run Container
 
 **Code**
 
@@ -142,7 +142,7 @@ Explain multi-stage Dockerfile.
 .. Data plane
 . Introduce kubectl
 
-=== Kubernetes resources
+=== Kubernetes Resources
 
 . Resources
 .. Pod, sample config file
@@ -183,7 +183,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl api-resources
 
-=== Deploy to Kubernetes using standalone manifests
+=== Deploy to Kubernetes using Standalone Manifests
 
 **Prep Work**
 
@@ -212,7 +212,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 	kubectl delete -f greeting-service.yaml
 	kubectl delete -f greeting-deployment.yaml
 
-=== Deploy to Kubernetes using standalone single manifest
+=== Deploy to Kubernetes using Standalone Single Manifest
 
 . Deploy application to Kubernetes using a single manifest:
 
@@ -230,7 +230,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl delete deployment/greeting svc/greeting
 
-=== Introduction to Helm charts
+=== Introduction to Helm Charts
 
 **Slides**
 
@@ -281,7 +281,7 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 **Code**
 
-You can debug a Docker container and a Kubernetes Pod if they're running locally on your machine.
+You can debug a Docker container and a Kubernetes Pod if they're running locally on your machine. (TODO: Test for remote debugging)
 
 This was tested using Docker for Mac/Kubernetes. Use the previously deployed Helm chart.
 
@@ -328,7 +328,7 @@ image::images/docker-debug3.png[]
 
 . Introduction to Amazon EKS
 
-=== Create an EKS cluster
+=== Create an EKS Cluster
 
 **Code**
 
@@ -439,7 +439,9 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 
 	helm delete --purge myapp
 
-=== Backup and restore cluster using Heptio Ark
+=== Backup and Restore Cluster using Heptio Ark
+
+TODO
 
 == Chapter 5: Istio Service Mesh
 
@@ -497,7 +499,7 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 +
 Check that both Tracing and Grafana add-ons are enabled.
 
-=== Deploy Istio-enabled application
+=== Deploy Istio-enabled Application
 
 **Prep Work**
 
@@ -534,7 +536,7 @@ Change to `manifests/charts` directory
 +
 It takes about three minutes for the ELB to be ready to receive requests.
 
-=== Round robin between two deployments
+=== Round Robin between Two Deployments
 
 . Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
 
@@ -617,12 +619,16 @@ Change to `manifests` directory
 			-o jsonpath='{.items[0].metadata.name}') 3000:3000 &
 
 . View Istio dashboard http://localhost:3000/d/1/istio-dashboard?
+. Invoke the endpoint a few times:
 
-. Invoke the endpoint:
+	for i in {1..50}
+	do
+		curl -q http://$(kubectl get svc/greeting-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+		echo
+	done
 
-	curl http://$(kubectl get svc/greeting \
-		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/hello
-
+. Show the Grafana dashboard:
++
 image::images/istio-dashboard.png[]
 
 == Chapter 6: Deployment Pipelines
@@ -652,7 +658,6 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 	kubectl config get-contexts
 	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
-	          arun@eks-gpu.us-west-2.eksctl.io   eks-gpu.us-west-2.eksctl.io   arun@eks-gpu.us-west-2.eksctl.io   
 	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
 	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop
 
@@ -665,7 +670,7 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 	curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64 \
 		&& chmod +x skaffold
 
-. Open http://localhost:8080/hello in browser. This will show the page is not available.
+. Open http://localhost:8080/hello in browser. This will show that the page is not available.
 . Run Skaffold in the application directory:
 
     cd app
