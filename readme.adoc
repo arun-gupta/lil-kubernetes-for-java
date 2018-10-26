@@ -47,11 +47,14 @@ The source code is in the `app` directory.
 **Slides**
 
 . Concepts to be explained:
-.. Building an image
+.. Dockerfile
+... FROM, ADD/COPY, CMD
+... Multi-stage Dockerfile
+.. DMP, GMP and Jib
 .. Build context
 .. Image tagging
-.. Running a container
-.. Port forwarding
+.. Run a container
+.. Port forward
 
 === Build Docker image and run container
 
@@ -80,6 +83,53 @@ Explain multi-stage Dockerfile.
 
 	docker container rm -f greeting
 
+=== Minimal Docker Image using Custom JRE
+
+**Prep Work**
+
+. Download http://download.oracle.com/otn-pub/java/jdk/11.0.1+13/90cf5d8f270a4347a95050320eef3fb7/jdk-11.0.1_linux-x64_bin.rpm[JDK 11] and `scp` to an https://aws.amazon.com/marketplace/pp/B00635Y2IW/ref=mkt_ste_ec2_lw_os_win[Amazon Linux] instance
+. Install JDK 11:
+
+	sudo yum install jdk-11.0.1_linux-x64_bin.rpm
+
+. Clone the repo:
+
+	git clone https://github.com/arun-gupta/lynda-k8s-for-java
+
+. Build the application:
+
+	cd lynda-k8s-for-java/app
+	mvn package
+
+**Code**
+
+. Create a custom JRE for the Spring Boot application:
+
+	cp target/app.war target/app.jar
+	jlink \
+		--output myjre \
+		--add-modules $(jdeps --print-module-deps target/app.jar),\
+		java.xml,jdk.unsupported,java.sql,java.naming,java.desktop,\
+		java.management,java.security.jgss,java.instrument
+
+. Build Docker image using this custom JRE:
+
+	docker image build --file Dockerfile.jre -t arungupta/greeting:jre-slim .
+
+. List the Docker images and show the difference in sizes:
+
+	[ec2-user@ip-172-31-21-7 app]$ docker image ls | grep greeting
+	arungupta/greeting   jre-slim            9eed25582f36        6 seconds ago       162MB
+	arungupta/greeting   latest              1b7c061dad60        10 hours ago        490MB
+
+. Run the container:
+
+	docker container run -d -p 8080:8080 arungupta/greeting:jre-slim
+
+. Access the application:
+
+	curl http://localhost:8080/hello
+
 == Chapter 3: Kubernetes Concepts and Getting Started
 
 === Introduction to Kubernetes
@@ -105,11 +155,14 @@ Explain multi-stage Dockerfile.
 
 === Kubernetes on Desktop
 
-**Code**
+**Prep Work**
 
 Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
 
 . Ensure that Kubernetes is enabled in Docker for Mac
+
+**Code**
+
 . Show the list of contexts:
 
     kubectl config get-contexts
@@ -132,16 +185,23 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 === Deploy to Kubernetes using standalone manifests
 
+**Prep Work**
+
+. Change to `manifests/standalone` directory
+
 **Code**
 
 . Deploy application to Kubernetes using separate manifests:
 
-	kubectl create -f <>
+	kubectl create -f greeting-deployment.yaml
+	kubectl create -f greeting-service.yaml
 
 . Check deployment and service:
 
 	kubectl get deployment
 	kubectl get svc
+	kubectl get pods
+	kubectl logs <pod-name>
 
 . Access the application:
 
@@ -149,21 +209,26 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 . Delete deployment and service:
 
-	kubectl delete -f <>
+	kubectl delete -f greeting-deployment.yaml
+	kubectl delete -f greeting-service.yaml
+
+=== Deploy to Kubernetes using standalone single manifest
 
 . Deploy application to Kubernetes using a single manifest:
 
-	kubectl create -f <>
+	kubectl create -f greeting.yaml
 
 . Check deployment and service:
 
-	kubectl get deployment
-	kubectl get svc
+	kubectl get deployment,svc
+
+. Access the application:
+
+	curl http://localhost:8080/hello
 
 . Delete deployment and service (a different way to delete):
 
-	kubectl delete deployment/<>
-	kubectl delete svc/<>
+	kubectl delete deployment/greeting svc/greeting
 
 === Introduction to Helm charts
 
@@ -174,6 +239,10 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 . Sample Helm chart
 
 === Deploy Application to Kubernetes using Helm Charts
+
+**Prep Work**
+
+. Change to `manifests/charts` directory
 
 **Code**
 
@@ -197,7 +266,7 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 +
 . Install the Helm chart:
 
-	helm install --name myapp manifests/myapp
+	helm install --name myapp myapp
 
 . Check that the pod is running:
 
@@ -428,13 +497,13 @@ Check that both Tracing and Grafana add-ons are enabled.
 
 	kubectl label namespace default istio-injection=enabled
 
-. From the repo's main directory, deploy pod with sidecar:
+. From the repo's main directory, deploy the application:
 
 	kubectl apply -f manifests/app.yaml
 
 . Check pods and note that it has two containers (one for the application and one for the sidecar):
 
-	kubectl get pods
+	kubectl get pods -l app=greeting
 	NAME                       READY     STATUS    RESTARTS   AGE
 	greeting-d4f55c7ff-6gz8b   2/2       Running   0          5s
 
@@ -459,7 +528,7 @@ It takes about three minutes for the ELB to be ready to receive requests.
 
 . Check the list of pods:
 
-	kubectl get pods
+	kubectl get pods -l app=greeting
 	NAME                              READY     STATUS    RESTARTS   AGE
 	greeting-hello-69cc7684d-7g4bx    2/2       Running   0          1m
 	greeting-howdy-788b5d4b44-g7pml   2/2       Running   0          1m
