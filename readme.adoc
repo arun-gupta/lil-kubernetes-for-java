@@ -193,13 +193,13 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 . Deploy application to Kubernetes using separate manifests:
 
-	kubectl create -f greeting-deployment.yaml
 	kubectl create -f greeting-service.yaml
+	kubectl create -f greeting-deployment.yaml
 
-. Check deployment and service:
+. Check service, deployment and pods:
 
-	kubectl get deployment
 	kubectl get svc
+	kubectl get deployment
 	kubectl get pods
 	kubectl logs <pod-name>
 
@@ -207,10 +207,10 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	curl http://localhost:8080/hello
 
-. Delete deployment and service:
+. Delete service and deployment:
 
-	kubectl delete -f greeting-deployment.yaml
 	kubectl delete -f greeting-service.yaml
+	kubectl delete -f greeting-deployment.yaml
 
 === Deploy to Kubernetes using standalone single manifest
 
@@ -218,9 +218,9 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl create -f greeting.yaml
 
-. Check deployment and service:
+. Check deployment, pods and service:
 
-	kubectl get deployment,svc
+	kubectl get svc,deployment,pods
 
 . Access the application:
 
@@ -268,17 +268,13 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 	helm install --name myapp myapp
 
-. Check that the pod is running:
+. Check that the resources are running:
 
-	kubectl get pods
-
-. Check that the service is up:
-
-	kubectl get svc
+	kubectl get svc,deployment,pods
 
 . Access the application:
 
-  curl http://$(kubectl get svc/myapp-greeting \
+  curl http://$(kubectl get svc/greeting \
   	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
 
 === Debug Kubernetes Deployment using IntelliJ
@@ -291,11 +287,10 @@ This was tested using Docker for Mac/Kubernetes. Use the previously deployed Hel
 
 . Show service:
 +
-	kubectl get svc
-	NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                         AGE
-	greeting-service   LoadBalancer   10.101.39.100    <pending>     80:30854/TCP                    8m
-	kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP                         90d
-	myapp-greeting     LoadBalancer   10.108.104.178   localhost     8080:32189/TCP,5005:31117/TCP   4s
+	$ kubectl get svc
+	NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
+	greeting     LoadBalancer   10.99.253.180   localhost     8080:30194/TCP,5005:31755/TCP   2m
+	kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP                         123d
 +
 Highlight the debug port is also forwarded.
 +
@@ -316,6 +311,11 @@ image::images/docker-debug2.png[]
 +
 image::images/docker-debug3.png[]
 +
+. Click on green button to continue execution
+. Invoke the application:
+
+	curl http://locahost:8080/hello
+
 . Delete the Helm chart:
 
 	helm delete --purge myapp
@@ -326,7 +326,7 @@ image::images/docker-debug3.png[]
 
 **Slides**
 
-. Intro to Amazon EKS
+. Introduction to Amazon EKS
 
 === Create an EKS cluster
 
@@ -379,11 +379,10 @@ This workaround to rename the tool is required until https://github.com/weavewor
 +
 	kubectl config get-contexts
 	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
-	          arun@eks-gpu.us-west-2.eksctl.io   eks-gpu.us-west-2.eksctl.io   arun@eks-gpu.us-west-2.eksctl.io   
 	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
 	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop   
 +
-As indicated by `*`, kubectl CLI configuration is updated to the recently created cluster.
+`*` indicates that kubectl is now configured to talk to the newly created cluster.
 
 === Migrate Application to Kubernetes Cluster on AWS
 
@@ -393,7 +392,7 @@ As indicated by `*`, kubectl CLI configuration is updated to the recently create
 
     kubectl config use-context arun@myeks.us-east-1.eksctl.io
 
-. Install Helm:
+. Install Helm in EKS:
 
 	kubectl -n kube-system create sa tiller
 	kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
@@ -418,7 +417,7 @@ As indicated by `*`, kubectl CLI configuration is updated to the recently create
 
 	helm install --name myapp manifests/myapp
 
-. Get the service:
+. Get the service: (TODO: Update this output)
 +
 	kubectl get svc
 	NAME             TYPE           CLUSTER-IP       EXTERNAL-IP                                                             PORT(S)                         AGE
@@ -429,12 +428,14 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 +
 . Access the application:
 
-	curl http://$(kubectl get svc/myapp-greeting \
+	curl http://$(kubectl get svc/greeting \
 		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
 
 . Delete the application:
 
 	helm delete --purge myapp
+
+=== Backup and restore cluster using Heptio Ark
 
 == Chapter 5: Istio Service Mesh
 
