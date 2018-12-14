@@ -307,15 +307,19 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 . Delete the Helm chart:
 
-    helm delete myapp --purge
+	helm delete --purge myapp
 
 === Debug Kubernetes Deployment using IntelliJ
 
 **Code**
 
-You can debug a Docker container and a Kubernetes Pod if they're running locally on your machine. (TODO: Test for remote debugging)
+You can debug a Kubernetes Pod if they're running locally on your machine. (TODO: Test for remote debugging)
 
 This was tested using Docker for Mac/Kubernetes. Use the previously deployed Helm chart.
+
+. Install the Helm chart:
+
+	helm install --name myapp myapp
 
 . Show service:
 +
@@ -541,7 +545,7 @@ Change to `manifests/charts` directory
 
 	kubectl label namespace default istio-injection=enabled
 
-. Show istioctl in case `default` namespace injectio cannot be enabled:
+. Talk about `istioctl` in case `default` namespace injection cannot be enabled:
 
 	kubectl apply -f $(istioctl kube-inject -f manifest.yaml)
 
