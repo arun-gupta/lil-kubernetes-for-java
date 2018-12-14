@@ -50,7 +50,6 @@ The source code is in the `app` directory.
 .. Dockerfile
 ... FROM, ADD/COPY, CMD
 ... Multi-stage Dockerfile
-.. DMP, GMP and Jib
 .. Build context
 .. Image tagging
 .. Run a container
@@ -82,6 +81,23 @@ Explain multi-stage Dockerfile.
 . Remove container:
 
 	docker container rm -f greeting
+
+=== Build Docker Image using Jib
+
+. Explain Jib maven profile
+. Create Docker image:
+
+    mvn compile jib:build -Pjib
+
+The benefits of using Jib over a multi-stage Dockerfile build include:
+
+* Don't need to install Docker or run a Docker daemon
+* Don't need to write a Dockerfile or build the archive of m2 dependencies
+* Much faster because it leverages Docker image layer caching
+
+The above builds directly to your Docker registry. Alternatively, Jib can also build to a Docker daemon:
+
+    mvn compile jib:dockerBuild -Pjib
 
 === Minimal Docker Image using Custom JRE
 
