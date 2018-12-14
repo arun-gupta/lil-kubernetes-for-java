@@ -84,16 +84,20 @@ Explain multi-stage Dockerfile.
 
 === Build Docker Image using Jib
 
-. Explain Jib maven profile
-. Create Docker image:
-
-    mvn compile jib:build -Pjib
+**Slides**
 
 The benefits of using Jib over a multi-stage Dockerfile build include:
 
 * Don't need to install Docker or run a Docker daemon
 * Don't need to write a Dockerfile or build the archive of m2 dependencies
 * Much faster because it leverages Docker image layer caching
+
+**Code**
+
+. Explain Jib maven profile
+. Create Docker image:
+
+    mvn compile jib:build -Pjib
 
 The above builds directly to your Docker registry. Alternatively, Jib can also build to a Docker daemon:
 
@@ -160,16 +164,22 @@ The above builds directly to your Docker registry. Alternatively, Jib can also b
 
 === Kubernetes Resources
 
+**Slides**
+
 . Resources
 .. Pod, sample config file
 .. Deployment, sample config file
 .. Daemonset, sample config file
+.. Service, sample config file
 .. Others
+
+=== Kubernetes on Desktop
+
+**Slides**
+
 . Getting started
 .. Minikube, Docker for Desktop
 .. Cloud
-
-=== Kubernetes on Desktop
 
 **Prep Work**
 
@@ -230,6 +240,8 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 === Deploy to Kubernetes using Standalone Single Manifest
 
+**Code**
+
 . Deploy application to Kubernetes using a single manifest:
 
 	kubectl create -f greeting.yaml
@@ -263,7 +275,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 **Code**
 
 . Install the Helm CLI:
-+
+
 	brew install kubernetes-helm
 +
 If Helm CLI is already installed then use `brew upgrade kubernetes-helm`.
@@ -290,8 +302,12 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 . Access the application:
 
-  curl http://$(kubectl get svc/greeting \
-  	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+	curl http://$(kubectl get svc/greeting \
+        -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+
+. Delete the Helm chart:
+
+    helm delete myapp --purge
 
 === Debug Kubernetes Deployment using IntelliJ
 
