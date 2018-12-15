@@ -724,6 +724,10 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 https://eksworkshop.com/codepipeline/codepipeline/
 
+Use the following command to access the service:
+
+	curl http://$(kubectl get svc/hello-k8s -o jsonpath='{.status.loadBalancer.ingress[0].hostname}’)
+
 === Deployment Pipeline using JenkinsX
 
 TBD
