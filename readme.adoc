@@ -718,7 +718,9 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 . Refresh the page in browser to see the output.
 
-=== Code Pipeline + Code Commit
+=== Code Pipeline
+
+**Code**
 
 https://eksworkshop.com/codepipeline/codepipeline/
 
