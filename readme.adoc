@@ -413,11 +413,11 @@ Include the directory where the CLI is downloaded to your `PATH`.
 . Check the nodes:
 
 	kubectl get nodes
-	NAME                              STATUS    ROLES     AGE       VERSION
-	ip-192-168-140-209.ec2.internal   Ready     <none>    1m        v1.10.3
-	ip-192-168-144-7.ec2.internal     Ready     <none>    1m        v1.10.3
-	ip-192-168-225-70.ec2.internal    Ready     <none>    1m        v1.10.3
-	ip-192-168-81-149.ec2.internal    Ready     <none>    1m        v1.10.3
+	NAME                            STATUS   ROLES    AGE   VERSION
+	ip-192-168-28-25.ec2.internal   Ready    <none>   16m   v1.10.3
+	ip-192-168-3-103.ec2.internal   Ready    <none>   15m   v1.10.3
+	ip-192-168-44-70.ec2.internal   Ready    <none>   16m   v1.10.3
+	ip-192-168-59-35.ec2.internal   Ready    <none>   15m   v1.10.3
 
 . Get the list of configs:
 +
@@ -429,10 +429,6 @@ Include the directory where the CLI is downloaded to your `PATH`.
 `*` indicates that kubectl is now configured to talk to the newly created cluster.
 
 === Migrate Application to Kubernetes Cluster on AWS
-
-**Prep Work**
-
-. Change to `manifests/charts` directory
 
 **Code**
 
@@ -449,28 +445,28 @@ Include the directory where the CLI is downloaded to your `PATH`.
 . Check the list of pods:
 
 	kubectl get pods -n kube-system
-	NAME                            READY     STATUS    RESTARTS   AGE
-	aws-node-7vs5w                  1/1       Running   0          6m
-	aws-node-8t4sb                  1/1       Running   1          6m
-	aws-node-d9jxv                  1/1       Running   1          6m
-	aws-node-sdfbd                  1/1       Running   0          6m
-	kube-dns-64b69465b4-z9rcq       3/3       Running   0          12m
-	kube-proxy-2gr82                1/1       Running   0          6m
-	kube-proxy-bn28f                1/1       Running   0          6m
-	kube-proxy-ng4xh                1/1       Running   0          6m
-	kube-proxy-rjj8x                1/1       Running   0          6m
-	tiller-deploy-895d57dd9-7z4xb   1/1       Running   0          21s
+	NAME                            READY   STATUS    RESTARTS   AGE
+	aws-node-6h4r9                  1/1     Running   1          16m
+	aws-node-7rwkw                  1/1     Running   1          16m
+	aws-node-k9g6s                  1/1     Running   0          16m
+	aws-node-t6k6v                  1/1     Running   1          16m
+	kube-dns-64b69465b4-vpxjq       3/3     Running   0          23m
+	kube-proxy-bnkj6                1/1     Running   0          16m
+	kube-proxy-bqths                1/1     Running   0          16m
+	kube-proxy-m7ctf                1/1     Running   0          16m
+	kube-proxy-tszj5                1/1     Running   0          16m
+	tiller-deploy-895d57dd9-zt2s2   1/1     Running   0          7s
 
 . Redeploy the application:
 
-	helm install --name myapp manifests/myapp
+	helm install --name myapp manifests/charts/myapp
 
-. Get the service: (TODO: Update this output)
+. Get the service:
 +
 	kubectl get svc
-	NAME             TYPE           CLUSTER-IP       EXTERNAL-IP                                                             PORT(S)                         AGE
-	kubernetes       ClusterIP      10.100.0.1       <none>                                                                  443/TCP                         17m
-	myapp-greeting   LoadBalancer   10.100.241.250   a8713338abef211e8970816cb629d414-71232674.us-east-1.elb.amazonaws.com   8080:32626/TCP,5005:30739/TCP   2m
+	NAME         TYPE           CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)                         AGE
+	greeting     LoadBalancer   10.100.12.193   a2d4c846f000111e9be5e0a988475aff-1529459134.us-east-1.elb.amazonaws.com   8080:32676/TCP,5005:32536/TCP   20s
+	kubernetes   ClusterIP      10.100.0.1      <none>                                                                    443/TCP                         26m
 +
 It shows the port `8080` and `5005` are published and an Elastic Load Balancer is provisioned. It takes about three minutes for the load balancer to be ready.
 +
