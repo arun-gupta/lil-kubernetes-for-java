@@ -1,0 +1,61 @@
+
+== Chapter 6: Deployment Pipelines
+
+=== Introduction to Deployment Pipelines
+
+**Slides**
+
+. What is deployment pipeline?
+. What is Skaffold?
+.. Key benefits
+.. Workflow
+. Code Pipeline + Code Commit
+.. Key benefits
+.. Workflow
+. JenkinsX
+.. Key benefits
+.. Workflow
+
+=== Skaffold
+
+**Code**
+
+https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line utility that facilitates continuous development for Kubernetes applications. With Skaffold, you can iterate on your application source code locally then deploy it to a remote Kubernetes cluster.
+
+. Check context:
+
+	kubectl config get-contexts
+	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
+	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
+	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop
+
+. Change to use local Kubernetes cluster:
+
+	kubectl config use-context docker-for-desktop
+
+. Download Skaffold:
+
+	curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64 \
+		&& chmod +x skaffold
+
+. Open http://localhost:8080/hello in browser. This will show that the page is not available.
+. Run Skaffold in the application directory:
+
+    cd app
+    skaffold dev
+
+. Refresh the page in browser to see the output.
+
+=== Code Pipeline
+
+**Code**
+
+https://eksworkshop.com/codepipeline/codepipeline/
+
+Use the following command to access the service:
+
+	curl http://$(kubectl get svc/hello-k8s -o jsonpath='{.status.loadBalancer.ingress[0].hostname}’)
+
+=== Deployment Pipeline using JenkinsX
+
+TBD
