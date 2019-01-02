@@ -1,0 +1,205 @@
+= Chapter 3: Kubernetes Concepts and Getting Started
+
+== Introduction to Kubernetes
+
+**Slides**
+
+. What is Kubernetes?
+. Cluster concepts
+.. Control plane
+.. Data plane
+. Introduce kubectl
+
+== Kubernetes Resources
+
+**Slides**
+
+. Resources
+.. Pod, sample config file
+.. Deployment, sample config file
+.. Daemonset, sample config file
+.. Service, sample config file
+.. Others
+
+== Kubernetes on Desktop
+
+**Slides**
+
+. Getting started
+.. Minikube, Docker for Desktop
+.. Cloud
+
+**Prep Work**
+
+Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
+
+. Ensure that Kubernetes is enabled in Docker for Mac
+
+**Code**
+
+. Show the list of contexts:
+
+    kubectl config get-contexts
+
+. Configure kubectl CLI for Kubernetes cluster
+
+	kubectl config use-context docker-for-desktop
+
+. Check the version:
+
+	kubectl version
+
+. Check the nodes:
+
+	kubectl get nodes
+
+. Check the resources:
+
+	kubectl api-resources
+
+== Deploy to Kubernetes using Standalone Manifests
+
+**Prep Work**
+
+. Change to `manifests/standalone` directory
+
+**Code**
+
+. Deploy application to Kubernetes using separate manifests:
+
+	kubectl create -f greeting-service.yaml
+	kubectl create -f greeting-deployment.yaml
+
+. Check service, deployment and pods:
+
+	kubectl get svc
+	kubectl get deployment
+	kubectl get pods
+	kubectl logs <pod-name>
+
+. Access the application:
+
+	curl http://localhost:8080/hello
+
+. Delete service and deployment:
+
+	kubectl delete -f greeting-service.yaml
+	kubectl delete -f greeting-deployment.yaml
+
+== Deploy to Kubernetes using Standalone Single Manifest
+
+**Code**
+
+. Deploy application to Kubernetes using a single manifest:
+
+	kubectl create -f greeting.yaml
+
+. Check deployment, pods and service:
+
+	kubectl get svc,deployment,pods
+
+. Access the application:
+
+	curl http://localhost:8080/hello
+
+. Delete deployment and service (a different way to delete):
+
+	kubectl delete deployment/greeting svc/greeting
+
+== Introduction to Helm Charts
+
+**Slides**
+
+. Explain what is Helm chart?
+. Key concepts - client, tiller, charts
+. Sample Helm chart
+
+== Deploy Application to Kubernetes using Helm Charts
+
+**Prep Work**
+
+. Change to `manifests/charts` directory
+
+**Code**
+
+. Install the Helm CLI:
+
+	brew install kubernetes-helm
++
+If Helm CLI is already installed then use `brew upgrade kubernetes-helm`.
++
+. Check Helm version:
+
+	helm version
+
+. Install Helm in Kubernetes cluster:
++
+	helm init
++
+If Helm has already been initialized on the cluster, then you may have to upgrade Tiller:
++
+	helm init --upgrade
++
+. Install the Helm chart:
+
+	helm install --name myapp myapp
+
+. Check that the resources are running:
+
+	kubectl get svc,deployment,pods
+
+. Access the application:
+
+	curl http://$(kubectl get svc/greeting \
+        -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+
+. Delete the Helm chart:
+
+	helm delete --purge myapp
+
+== Debug Kubernetes Deployment using IntelliJ
+
+**Code**
+
+You can debug a Kubernetes Pod if they're running locally on your machine. (TODO: Test for remote debugging)
+
+This was tested using Docker for Mac/Kubernetes. Use the previously deployed Helm chart.
+
+. Install the Helm chart:
+
+	helm install --name myapp myapp
+
+. Show service:
++
+	$ kubectl get svc
+	NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
+	greeting     LoadBalancer   10.99.253.180   localhost     8080:30194/TCP,5005:31755/TCP   2m
+	kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP                         123d
++
+Highlight the debug port is also forwarded.
++
+. In IntelliJ, `Run`, `Debug`, `Remote`:
++
+image::images/docker-debug1.png[]
++
+. Click on `Debug`, setup a breakpoint in the class:
++
+image::images/docker-debug2.png[]
++
+. Access the application:
+
+	curl http://$(kubectl get svc/myapp-greeting \
+		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+
+. Show the breakpoint hit in IntelliJ:
++
+image::images/docker-debug3.png[]
++
+. Click on green button to continue execution
+. Invoke the application:
+
+	curl http://locahost:8080/hello
+
+. Delete the Helm chart:
+
+	helm delete --purge myapp
