@@ -1,0 +1,121 @@
+= Chapter 2: Packaging Application using Docker
+
+== Introduction to Docker
+
+**Slides**
+
+. Why Docker?
+. Explain the Docker workflow of CLI, Engine and Registry
+
+== Docker Image and Container
+
+**Slides**
+
+. Concepts to be explained:
+.. Dockerfile
+... FROM, ADD/COPY, CMD
+... Multi-stage Dockerfile
+.. Build context
+.. Image tagging
+.. Run a container
+.. Port forward
+
+== Build Docker Image
+
+**Code**
+
+. Show and explain multi-stage Dockerfile
+. Create `m2.tar.gz`:
+
+	mvn -Dmaven.repo.local=./m2 clean package
+	tar cvf m2.tar.gz ./m2
+
+. Create Docker image:
+
+	docker image build -t arungupta/greeting .
+
+. Show Docker image:
+
+    docker image ls
+
+== Run Docker Container
+
+. Run container:
+
+	docker container run --name greeting -p 8080:8080 -d arungupta/greeting
+
+. Access application:
+
+	curl http://localhost:8080/hello
+
+. Remove container:
+
+	docker container rm -f greeting
+
+== Build Docker Image using Jib
+
+**Slides**
+
+The benefits of using Jib over a multi-stage Dockerfile build include:
+
+* Don't need to install Docker or run a Docker daemon
+* Don't need to write a Dockerfile or build the archive of m2 dependencies
+* Much faster because it leverages Docker image layer caching
+
+**Code**
+
+. Explain Jib maven profile
+. Create Docker image:
+
+    mvn compile jib:build -Pjib
+
+The above builds directly to your Docker registry. Alternatively, Jib can also build to a Docker daemon:
+
+    mvn compile jib:dockerBuild -Pjib
+
+== Minimal Docker Image using Custom JRE
+
+**Prep Work**
+
+. Download http://download.oracle.com/otn-pub/java/jdk/11.0.1+13/90cf5d8f270a4347a95050320eef3fb7/jdk-11.0.1_linux-x64_bin.rpm[JDK 11] and `scp` to an https://aws.amazon.com/marketplace/pp/B00635Y2IW/ref=mkt_ste_ec2_lw_os_win[Amazon Linux] instance
+. Install JDK 11:
+
+	sudo yum install jdk-11.0.1_linux-x64_bin.rpm
+
+. Clone the repo:
+
+	git clone https://github.com/arun-gupta/lynda-k8s-for-java
+
+. Build the application:
+
+	cd lynda-k8s-for-java/app
+	mvn package
+
+**Code**
+
+. Create a custom JRE for the Spring Boot application:
+
+	cp target/app.war target/app.jar
+	jlink \
+		--output myjre \
+		--add-modules $(jdeps --print-module-deps target/app.jar),\
+		java.xml,jdk.unsupported,java.sql,java.naming,java.desktop,\
+		java.management,java.security.jgss,java.instrument
+
+. Build Docker image using this custom JRE:
+
+	docker image build --file Dockerfile.jre -t arungupta/greeting:jre-slim .
+
+. List the Docker images and show the difference in sizes:
+
+	[ec2-user@ip-172-31-21-7 app]$ docker image ls | grep greeting
+	arungupta/greeting   jre-slim            9eed25582f36        6 seconds ago       162MB
+	arungupta/greeting   latest              1b7c061dad60        10 hours ago        490MB
+
+. Run the container:
+
+	docker container run -d -p 8080:8080 arungupta/greeting:jre-slim
+
+. Access the application:
+
+	curl http://localhost:8080/hello
