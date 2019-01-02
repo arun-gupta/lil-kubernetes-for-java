@@ -1,0 +1,32 @@
+= Chapter 1: Introduction and Application
+
+== Introduction
+
+**Slides**
+
+. What is Kubernetes?
+
+== Java and Kubernetes
+
+. Why Java and Kubernetes?
+. Typical choices of building Java applications
+. Typical workflow for Java + k8s
+
+== Build and Test Application using Maven
+
+We will use a simple Java application built using Spring Boot. The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/hello`.
+
+The source code is in the `app` directory.
+
+. Show the application code in IntelliJ
+.. Show `GreetingController` class
+.. Explain that the code can be more complex
+.. Show `pom.xml`
+. Run application:
+
+	cd app
+	mvn spring-boot:run
+
+. Test application
+
+	curl http://localhost:8080/hello

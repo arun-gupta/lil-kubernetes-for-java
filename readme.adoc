@@ -3,35 +3,6 @@
 
 Deploying your Java application in a Kubernetes cluster could feel like Alice in Wonderland. You keep going down the rabbit hole and don't know how to make that ride comfortable. This repository contains source code and instructions for a Lynda course that explains how a Java application can be deployed, tested, debugged and monitored in a Kubernetes cluster. In addition, it also talks about canary deployment and deployment pipeline.
 
-== Chapter 1: Introduction and Application
-
-=== Introduction
-
-**Slides**
-
-. What is Kubernetes?
-. Why Java and Kubernetes?
-. Typical choices of building Java applications
-. What is the typical workflow for Java + k8s?
-
-=== Build and Test Application using Maven
-
-We will use a simple Java application built using Spring Boot. The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/hello`.
-
-The source code is in the `app` directory.
-
-. Show the application code in IntelliJ
-.. Show `GreetingController` class
-.. Explain that the code can be more complex
-.. Show `pom.xml`
-. Run application:
-
-	cd app
-	mvn spring-boot:run
-
-. Test application
-
-	curl http://localhost:8080/hello
 
 == Chapter 2: Packaging Application using Docker
 
