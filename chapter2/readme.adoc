@@ -120,10 +120,15 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 
 **Prereq**
 
-. Download http://download.oracle.com/otn-pub/java/jdk/11.0.1+13/90cf5d8f270a4347a95050320eef3fb7/jdk-11.0.1_linux-x64_bin.rpm[JDK 11] and `scp` to an https://aws.amazon.com/marketplace/pp/B00635Y2IW/ref=mkt_ste_ec2_lw_os_win[Amazon Linux] instance
+. Create an Ubuntu EC2 instance
+. Login:
+
+	ssh -i ~/.ssh/arun-us-east1.pem ubuntu@ec2-3-84-85-248.compute-1.amazonaws.com
+
 . Install JDK 11:
 
-	sudo yum install jdk-11.0.1_linux-x64_bin.rpm
+	sudo apt-get update
+	sudo apt-get install -y default-jdk
 
 . Clone the repo:
 
@@ -132,33 +137,46 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 . Build the application:
 
 	cd lynda-k8s-for-java/app
+	sudo apt install -y maven
 	mvn package
+
+. Install Docker:
+
+	sudo apt install -y docker.io
+
+. Build the Docker image:
+
+	mvn -Dmaven.repo.local=./repository clean package
+	tar cf repository.tar.gz ./repository
+	sudo docker image build -t arungupta/greeting .
 
 **Code**
 
 . Create a custom JRE for the Spring Boot application:
 
-	cp target/app.war target/app.jar
+	cp target/greeting.war target/greeting.jar
 	jlink \
 		--output myjre \
-		--add-modules $(jdeps --print-module-deps target/app.jar),\
+		--add-modules $(jdeps --print-module-deps target/greeting.jar),\
 		java.xml,jdk.unsupported,java.sql,java.naming,java.desktop,\
 		java.management,java.security.jgss,java.instrument
 
 . Build Docker image using this custom JRE:
 
-	docker image build --file Dockerfile.jre -t arungupta/greeting:jre-slim .
+	sudo docker image build -f Dockerfile.jre -t arungupta/greeting:jre-slim .
 
-. List the Docker images and show the difference in sizes:
+. List Docker images and show the difference in sizes:
 
-	[ec2-user@ip-172-31-21-7 app]$ docker image ls | grep greeting
-	arungupta/greeting   jre-slim            9eed25582f36        6 seconds ago       162MB
-	arungupta/greeting   latest              1b7c061dad60        10 hours ago        490MB
+	ubuntu@ip-172-31-35-132:~$ sudo docker image ls
+	REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+	arungupta/greeting   jre-slim            4334d1ebec46        2 minutes ago       160MB
+	arungupta/greeting   latest              079dd8de2731        5 minutes ago       489MB
 
 . Run the container:
 
-	docker container run -d -p 8080:8080 arungupta/greeting:jre-slim
+	sudo docker container run -d -p 8080:8080 arungupta/greeting:jre-slim
 
 . Access the application:
 
 	curl http://localhost:8080/hello
+
