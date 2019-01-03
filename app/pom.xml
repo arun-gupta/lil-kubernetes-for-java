@@ -66,6 +66,7 @@
                                     <port>8080</port>
                                     <port>5005</port>
                                 </ports>
+                                <useCurrentTimestamp>true</useCurrentTimestamp>
                             </container>
                         </configuration>
                         <executions>
