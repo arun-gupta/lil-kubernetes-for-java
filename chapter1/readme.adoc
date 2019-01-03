@@ -1,15 +1,15 @@
 = Chapter 1: Introduction and Application
 
-== Introduction
+== 1.1 Introduction
 
 **Slides**
 
-. What is Kubernetes?
+. Why Kubernetes?
 
-== Java and Kubernetes
+== Kubernetes Workflow for Java Developers
 
-. Why Java and Kubernetes?
-. Typical choices of building Java applications
+**Slides**
+
 . Typical workflow for Java + k8s
 
 == Build and Test Application using Maven
