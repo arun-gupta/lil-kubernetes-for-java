@@ -1,19 +1,33 @@
 = Chapter 2: Packaging Application using Docker
 
-== Introduction to Docker
+== 2.1 Docker Workflow
 
 **Slides**
 
-. Why Docker?
 . Explain the Docker workflow of CLI, Engine and Registry
 
-== Docker Image and Container
+== 2.2 Docker Image and Container
 
 **Slides**
 
 . Concepts to be explained:
 .. Dockerfile
-... FROM, ADD/COPY, CMD
+... FROM, ADD, CMD
++
+```
+FROM debian
+
+CMD echo "hello world!"
+```
++
+Another Dockerfile:
++
+```
+FROM openjdk
+
+CMD java -version
+```
++
 ... Multi-stage Dockerfile
 .. Build context
 .. Image tagging
@@ -22,13 +36,17 @@
 
 == Build Docker Image
 
+**Prereq**
+
+. Move to `app` directory
+
 **Code**
 
 . Show and explain multi-stage Dockerfile
-. Create `m2.tar.gz`:
+. Create local repo:
 
-	mvn -Dmaven.repo.local=./m2 clean package
-	tar cvf m2.tar.gz ./m2
+	mvn -Dmaven.repo.local=./repository clean package
+	tar cf repository.tar.gz ./repository
 
 . Create Docker image:
 
@@ -42,15 +60,40 @@
 
 . Run container:
 
-	docker container run --name greeting -p 8080:8080 -d arungupta/greeting
-
+    docker container run -p 8080:8080 arungupta/greeting
++
+Show logs.
++
 . Access application:
+
+	curl http://localhost:8080/hello
+
+. Show list of containers:
+
+    docker container ls
+
+. Terminate container:
+
+	docker container stop <name>
+	docker container rm <name>
+
+. Alternatively, start the container:
+
+	docker container run -p 8080:8080 --name greeting -d arungupta/greeting
+
+. Show logs:
+
+    docker container logs greeting
+
+. Access  application:
 
 	curl http://localhost:8080/hello
 
 . Remove container:
 
 	docker container rm -f greeting
++
+Explain forced termination.
 
 == Build Docker Image using Jib
 
@@ -65,17 +108,17 @@ The benefits of using Jib over a multi-stage Dockerfile build include:
 **Code**
 
 . Explain Jib maven profile
-. Create Docker image:
+. Create Docker image to Docker daemon:
 
-    mvn compile jib:build -Pjib
+    mvn package jib:build -Pjib
 
-The above builds directly to your Docker registry. Alternatively, Jib can also build to a Docker daemon:
+Alternatively, Jib can also build without Docker daemon, and directly to a registry:
 
-    mvn compile jib:dockerBuild -Pjib
+    mvn package jib:build -Pjib
 
 == Minimal Docker Image using Custom JRE
 
-**Prep Work**
+**Prereq**
 
 . Download http://download.oracle.com/otn-pub/java/jdk/11.0.1+13/90cf5d8f270a4347a95050320eef3fb7/jdk-11.0.1_linux-x64_bin.rpm[JDK 11] and `scp` to an https://aws.amazon.com/marketplace/pp/B00635Y2IW/ref=mkt_ste_ec2_lw_os_win[Amazon Linux] instance
 . Install JDK 11:
