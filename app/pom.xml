@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.example.app.greeting</groupId>
-    <artifactId>app</artifactId>
+    <artifactId>greeting</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -19,7 +19,7 @@
         <docker.repo>arungupta</docker.repo>
         <docker.tag>latest</docker.tag>
         <docker.registry>registry.hub.docker.com</docker.registry>
-        <docker.name>${docker.registry}}/${docker.repo}/${project.build.finalName}:${docker.tag}</docker.name>
+        <docker.name>${docker.registry}/${docker.repo}/${project.build.finalName}:${docker.tag}</docker.name>
         <greeting.host>localhost</greeting.host>
         <greeting.port>8080</greeting.port>
     </properties>
@@ -49,7 +49,7 @@
                     <plugin>
                         <groupId>com.google.cloud.tools</groupId>
                         <artifactId>jib-maven-plugin</artifactId>
-                        <version>0.9.13</version>
+                        <version>0.10.1</version>
                         <configuration>
                             <from>
                                 <image>openjdk:8-jre</image>
@@ -72,7 +72,7 @@
                             <execution>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>build</goal>
+                                    <goal>dockerBuild</goal>
                                 </goals>
                             </execution>
                         </executions>
