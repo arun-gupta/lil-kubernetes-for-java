@@ -16,8 +16,7 @@
 
 We will use a simple Java application built using Spring Boot. The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/hello`.
 
-The source code is in the `app` directory.
-
+. Change to `app` directory.
 . Show the application code in IntelliJ
 .. Show `GreetingController` class
 .. Explain that the code can be more complex
