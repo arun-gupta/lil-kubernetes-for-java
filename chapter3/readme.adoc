@@ -33,10 +33,6 @@
 .. Kubernetes Cluster on Desktop
 .. Cloud
 
-**Prep Work**
-
-Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
-
 **Code**
 
 . Docker, Preferences, Kubernetes, Enable Kubernetes, Apply
@@ -92,7 +88,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 	kubectl delete -f greeting-service.yaml
 	kubectl delete -f greeting-deployment.yaml
 
-== Deploy to Kubernetes using Standalone Single Manifest
+== 3.6 Deploy to Kubernetes using Standalone Single Manifest
 
 **Code**
 
@@ -116,7 +112,7 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl delete deployment/greeting svc/greeting
 
-== Introduction to Helm Charts
+== 3.7 Introduction to Helm Charts
 
 **Slides**
 
@@ -124,14 +120,11 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 . Key concepts - client, tiller, charts
 . Sample Helm chart
 
-== Deploy Application to Kubernetes using Helm Charts
-
-**Prep Work**
-
-. Change to `manifests/charts` directory
+== 3.8 Deploy Application to Kubernetes using Helm Charts
 
 **Code**
 
+. Change to `manifests/charts` directory
 . Install the Helm CLI:
 
 	brew install kubernetes-helm
@@ -167,7 +160,7 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 	helm delete --purge myapp
 
-== Debug Kubernetes Deployment using IntelliJ
+== 3.9 Debug Kubernetes Deployment using IntelliJ
 
 **Code**
 
@@ -196,9 +189,11 @@ image::images/docker-debug1.png[]
 +
 image::images/docker-debug2.png[]
 +
+Wait for about 10 seconds.
++
 . Access the application:
 
-	curl http://$(kubectl get svc/myapp-greeting \
+	curl http://$(kubectl get svc/greeting \
 		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
 
 . Show the breakpoint hit in IntelliJ:
@@ -213,3 +208,4 @@ image::images/docker-debug3.png[]
 . Delete the Helm chart:
 
 	helm delete --purge myapp
+
