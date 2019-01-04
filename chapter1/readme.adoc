@@ -6,13 +6,13 @@
 
 . Why Kubernetes?
 
-== Kubernetes Workflow for Java Developers
+== 1.2 Kubernetes Workflow for Java Developers
 
 **Slides**
 
-. Typical workflow for Java + k8s
+. Workflow for Java + K8s
 
-== Build and Test Application using Maven
+== 1.3 Build and Test Application using Maven
 
 We will use a simple Java application built using Spring Boot. The application publishes a REST endpoint that can be invoked at `http://{host}:{port}/hello`.
 
