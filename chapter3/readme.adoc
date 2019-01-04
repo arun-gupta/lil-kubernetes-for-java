@@ -1,42 +1,46 @@
 = Chapter 3: Kubernetes Concepts and Getting Started
 
-== Introduction to Kubernetes
+== 3.1 Introduction to Kubernetes
 
 **Slides**
 
 . What is Kubernetes?
-. Cluster concepts
-.. Control plane
-.. Data plane
-. Introduce kubectl
+. Resources
+.. Pod, sample config file
 
-== Kubernetes Resources
+== 3.2 Kubernetes Resources
 
 **Slides**
 
-. Resources
-.. Pod, sample config file
 .. Deployment, sample config file
-.. Daemonset, sample config file
 .. Service, sample config file
 .. Others
 
-== Kubernetes on Desktop
+== 3.3 Kubernetes Cluster
+
+**Slides**
+
+. Cluster concepts
+.. Control plane
+.. Data plane
+. Kubernetes Application Deployment
+
+== 3.4 Getting Started with a Kubernetes Cluster
 
 **Slides**
 
 . Getting started
-.. Minikube, Docker for Desktop
+.. Kubernetes Cluster on Desktop
 .. Cloud
 
 **Prep Work**
 
 Kubernetes can be easily enabled on a development machine using Docker for Mac as explained at https://docs.docker.com/docker-for-mac/#kubernetes.
 
-. Ensure that Kubernetes is enabled in Docker for Mac
-
 **Code**
 
+. Docker, Preferences, Kubernetes, Enable Kubernetes, Apply
+. Wait for Kubernetes to start. If this first time, then it'll take some time to download all the related Docker images on your local machine.
 . Show the list of contexts:
 
     kubectl config get-contexts
@@ -57,13 +61,15 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 
 	kubectl api-resources
 
-== Deploy to Kubernetes using Standalone Manifests
-
-**Prep Work**
-
-. Change to `manifests/standalone` directory
+== 3.5 Deploy to Kubernetes using Standalone Manifests
 
 **Code**
+
+. Change to `manifests/standalone` directory
+. Show and explain manifests:
+
+	more greeting-deployment.yaml
+	more greeting-service.yaml
 
 . Deploy application to Kubernetes using separate manifests:
 
@@ -89,6 +95,10 @@ Kubernetes can be easily enabled on a development machine using Docker for Mac a
 == Deploy to Kubernetes using Standalone Single Manifest
 
 **Code**
+
+. Show and explain combined manifest:
+
+	more greeting.yaml
 
 . Deploy application to Kubernetes using a single manifest:
 
