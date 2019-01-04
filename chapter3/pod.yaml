@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: greeting-pod
+  labels:
+    app: greeting
+spec:
+  containers:
+  - name: greeting-container
+    image: arungupta/greeting
