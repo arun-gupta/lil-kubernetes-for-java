@@ -34,14 +34,11 @@ CMD java -version
 .. Run a container
 .. Port forward
 
-== Build Docker Image
-
-**Prereq**
-
-. Move to `app` directory
+== 2.3 Build Docker Image
 
 **Code**
 
+. Change to `app` directory
 . Show and explain multi-stage Dockerfile
 . Create local repo:
 
@@ -56,7 +53,7 @@ CMD java -version
 
     docker image ls
 
-== Run Docker Container
+== 2.4 Run Docker Container
 
 . Run container:
 
@@ -95,7 +92,7 @@ Show logs.
 +
 Explain forced termination.
 
-== Build Docker Image using Jib
+== 2.5 Build Docker Image using Jib
 
 **Slides**
 
@@ -116,7 +113,7 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 
     mvn package jib:build -Pjib
 
-== Minimal Docker Image using Custom JRE
+== 2.6 Minimal Docker Image using Custom JRE
 
 **Prereq**
 
@@ -125,7 +122,7 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 
 	ssh -i ~/.ssh/arun-us-east1.pem ubuntu@ec2-3-84-85-248.compute-1.amazonaws.com
 
-. Install JDK 11:
+. Install default JDK:
 
 	sudo apt-get update
 	sudo apt-get install -y default-jdk
