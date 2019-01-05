@@ -5,16 +5,10 @@
 **Slides**
 
 . What is service mesh?
-. Envoy
 . What is Istio?
-. Istio components - Pilot, Mixer, Citadel
-. Istio resources
-.. Traffic shifting
-.. Canary deployment
-.. Distributed Tracing
-.. Telemetry
+. Istio core features
 
-== Install and Configure Istio on EKS
+== Install Istio on EKS
 
 More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-eks/[Getting Started with Istio on Amazon EKS].
 
@@ -22,11 +16,15 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 
 . Download Istio:
 
+	export ISTIO_VERSION=1.0.5
 	curl -L https://git.io/getLatestIstio | sh -
-	cd istio-1.*
+	cd istio-1.0.5
 
 . Include `istio-1.*/bin` directory in `PATH`
-. Install Istio on Amazon EKS:
+
+	export PATH=`pwd`/bin:$PATH
+
+. Helm has already been installed in a previous chapter. Install Istio on Amazon EKS:
 
 	helm install \
 		--wait \
@@ -36,29 +34,27 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 		--set tracing.enabled=true \
 		--set grafana.enabled=true
 
-. Verify:
+. Verify the list of pods:
 +
 	kubectl get pods -n istio-system
-	NAME                                        READY     STATUS    RESTARTS   AGE
-	grafana-75485f89b9-n4skw                    1/1       Running   0          1m
-	istio-citadel-84fb7985bf-bv2tm              1/1       Running   0          1m
-	istio-egressgateway-bd9fb967d-qls6z         1/1       Running   0          1m
-	istio-galley-655c4f9ccd-nblsb               1/1       Running   0          1m
-	istio-ingressgateway-688865c5f7-xmm46       1/1       Running   0          1m
-	istio-pilot-6cd69dc444-5j8kv                2/2       Running   0          1m
-	istio-policy-6b9f4697d-fpr9g                2/2       Running   0          1m
-	istio-statsd-prom-bridge-7f44bb5ddb-rlt77   1/1       Running   0          1m
-	istio-telemetry-6b5579595f-f7bd7            2/2       Running   0          1m
-	istio-tracing-ff94688bb-47zlc               1/1       Running   0          1m
-	prometheus-84bd4b9796-lrkkv                 1/1       Running   0          1m
+	NAME                                     READY   STATUS    RESTARTS   AGE
+	grafana-7f6cd4bf56-nlc2k                 1/1     Running   0          1m
+	istio-citadel-7dd558dcf-gtkxx            1/1     Running   0          1m
+	istio-egressgateway-88887488d-w8tgx      1/1     Running   0          1m
+	istio-galley-787758f7b8-s5v66            1/1     Running   0          1m
+	istio-ingressgateway-58c77897cc-2ml4d    1/1     Running   0          1m
+	istio-pilot-868cdfb5f7-pknvl             2/2     Running   0          1m
+	istio-policy-56c4579578-vwl8v            2/2     Running   0          1m
+	istio-sidecar-injector-d7f98d9cb-t6hht   1/1     Running   0          1m
+	istio-telemetry-7fb48dc68b-f9qrs         2/2     Running   0          1m
+	istio-tracing-7596597bd7-8gxwt           1/1     Running   0          1m
+	prometheus-76db5fddd5-pp558              1/1     Running   0          1m
 +
 Check that both Tracing and Grafana add-ons are enabled.
 
 == Deploy Istio-enabled Application
 
-**Prep Work**
-
-Change to `manifests/charts` directory
+**Code**
 
 . Enable `default` namespace injection:
 
@@ -68,10 +64,20 @@ Change to `manifests/charts` directory
 
 	kubectl apply -f $(istioctl kube-inject -f manifest.yaml)
 
-. TODO: How does istioctl work with Helm?
+. Change to `manifests` directory in the repo
 . Deploy the application:
 
-	helm install --name myapp myapp
+	helm install --name myapp charts/myapp
+
+. Show the list of installed apps:
+
+	helm ls
+
+. Check there is one deployment:
+
+	kubectl get deployments
+	NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	greeting   1         1         1            1           31s
 
 . Check pods and note that it has two containers (one for the application and one for the sidecar):
 
@@ -89,14 +95,23 @@ Change to `manifests/charts` directory
   curl http://$(kubectl get svc/greeting \
   	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
 +
-It takes about three minutes for the ELB to be ready to receive requests.
+It takes about three minutes for the ELB to be ready to respond.
 
 == Round Robin between Two Deployments
 
 . Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
 
   helm delete myapp --purge
-  helm install --name myapp myapp-hello-howdy
+  helm install --name myapp charts/myapp-hello-howdy
++
+Note, there is no `type: LoadBalancer` in this case. The service will be exposed using Istio Ingress gateway so that Istio can do the traffic split.
++
+. Check there are two deployments:
+
+	kubectl get deployments
+	NAME             DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	greeting-hello   1         1         1            1           31s
+	greeting-howdy   1         1         1            1           31s
 
 . Check the list of pods:
 
@@ -105,50 +120,40 @@ It takes about three minutes for the ELB to be ready to receive requests.
 	greeting-hello-69cc7684d-7g4bx    2/2       Running   0          1m
 	greeting-howdy-788b5d4b44-g7pml   2/2       Running   0          1m
 
-. Access application multipe times to see alternating response from the two deployments:
+. Create Istio resources ingress `Gateway`, `VirtualService` and `DestinationRule`:
+
+	kubectl apply -f standalone/greeting-istio.yaml
+
+. Check created manfiests:
+
+	kubectl get virtualservice,destinationrule,gateway
+
+. Get the ingress gateway address:
+
+	$ export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+	$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+
+. Access application multipe times to see about 50% split between two responses:
 
   for i in {1..10}
   do
-  	curl -q http://$(kubectl get svc/greeting -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+  	curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
   	echo
   done
 
 == Traffic Shifting using Istio
 
-**Prep Work**
-
-Change to `manifests` directory
-
 **Code**
-  
-. Setup an Istio rule to split traffic between 75% to `Hello` and 25% to `Howdy` version of the `greeting` service:
 
-	kubectl apply -f standalone/greeting-rule-75-25.yaml
+. Update `VirtualService` to split traffic between 90% to `Hello` and 10% to `Howdy` version of the `greeting` service.
 
-. Check created manfiests:
-
-	kubectl get virtualservice,destinationrule
+	kubectl apply -f standalone/greeting-istio.yaml
 
 . Invoke the service again to see the traffic split between two services:
 
   for i in {1..50}
   do
-  	curl -q http://$(kubectl get svc/greeting-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
-  	echo
-  done
-
-== Canary Deployment using Istio
-
-. Setup an Istio rule to divert 10% traffic to canary:
-
-  kubectl delete -f standalone/greeting-rule-75-25.yaml
-  kubectl apply -f standalone/greeting-canary.yaml
-
-. Access application multipe times to see ~10% greeting messages with `Howdy`:
-
-  for i in {1..50}
-  do
-  	curl -q http://$(kubectl get svc/greeting-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+  	curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
   	echo
   done
 
@@ -164,7 +169,7 @@ Change to `manifests` directory
 
 	kubectl get pods -l app=grafana -n istio-system
 	NAME                       READY     STATUS    RESTARTS   AGE
-	grafana-75485f89b9-n4skw   1/1       Running   0          10m
+	grafana-7f6cd4bf56-nlc2k   1/1       Running   0          10m
 
 . Forward Istio dashboard using Grafana UI:
 
