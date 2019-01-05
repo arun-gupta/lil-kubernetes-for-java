@@ -46,7 +46,7 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 	istio-telemetry-7fb48dc68b-4nxq2         2/2     Running   0          1m
 	prometheus-76db5fddd5-6vf7w              1/1     Running   0          1m
 
-== 5.3 Deploy Istio-enabled Application
+== 5.3 Deploy Application with Two Deployments
 
 **Code**
 
@@ -59,41 +59,7 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 	kubectl apply -f $(istioctl kube-inject -f manifest.yaml)
 
 . Change to `manifests` directory in the repo
-. Deploy the application:
-
-	helm install --name myapp charts/myapp
-
-. Show the list of installed apps:
-
-	helm ls
-
-. Check there is one deployment:
-
-	kubectl get deployments
-	NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-	greeting   1         1         1            1           31s
-
-. Check pods and note that it has two containers (one for the application and one for the sidecar):
-
-	kubectl get pods -l app=greeting
-	NAME                       READY     STATUS    RESTARTS   AGE
-	greeting-d4f55c7ff-6gz8b   2/2       Running   0          5s
-
-. Get the list of containers in the pod:
-
-	kubectl get pods -l app=greeting -o jsonpath={.items[*].spec.containers[*].name}
-	greeting istio-proxy
-
-. Get response:
-+
-  curl http://$(kubectl get svc/greeting \
-  	-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
-+
-It takes about three minutes for the ELB to be ready to respond.
-
-== 5.4 Round Robin between Two Deployments
-
-. Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
+. Deploy application with two versions of `greeting` pod, one that returns `Hello` and another that returns `Howdy`:
 
   helm delete myapp --purge
   helm install --name myapp charts/myapp-hello-howdy
@@ -107,12 +73,27 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 	greeting-hello   1         1         1            1           31s
 	greeting-howdy   1         1         1            1           31s
 
-. Check the list of pods:
+. Check pods for each deployemnt and note that it has two containers (one for the application and one for the sidecar):
 
-	kubectl get pods -l app=greeting
-	NAME                              READY     STATUS    RESTARTS   AGE
-	greeting-hello-69cc7684d-7g4bx    2/2       Running   0          1m
-	greeting-howdy-788b5d4b44-g7pml   2/2       Running   0          1m
+	NAME                              READY   STATUS    RESTARTS   AGE
+	greeting-hello-6799458d68-z7skl   2/2     Running   0          32s
+	greeting-howdy-f547698d6-gwjx9    2/2     Running   0          32s
+
+. Get the list of containers in the pod:
+
+	kubectl get pods -l greeting=hello -o jsonpath={.items[*].spec.containers[*].name}
+	greeting istio-proxy
+
+
+== 5.4 Create Istio Resources
+
+**Slides**
+
+- DestinationRule
+- VirtualService
+- Gateway
+
+**Code**
 
 . Create Istio resources ingress `Gateway`, `VirtualService` and `DestinationRule`:
 
