@@ -17,4 +17,3 @@ spec:
     protocol: TCP
     port: {{ .Values.service.externalDebugPort }}
     targetPort: {{ .Values.service.internalDebugPort }}
-  type: LoadBalancer

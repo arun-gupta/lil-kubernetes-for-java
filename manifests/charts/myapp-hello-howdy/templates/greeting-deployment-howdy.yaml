@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: greeting
+  name: greeting-howdy
   labels:
     name: greeting
     {{- template "labels" . }}
@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: greeting
+        greeting: {{ .Values.image.howdyTag }}
     spec:
       containers:
       - name: greeting
