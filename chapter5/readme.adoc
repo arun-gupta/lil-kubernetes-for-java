@@ -1,6 +1,6 @@
 = Chapter 5: Istio Service Mesh
 
-== Introduction to Istio Service Mesh
+== 5.1 Introduction to Istio Service Mesh
 
 **Slides**
 
@@ -8,7 +8,7 @@
 . What is Istio?
 . Istio core features
 
-== Install Istio on EKS
+== 5.2 Install Istio on EKS
 
 More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-eks/[Getting Started with Istio on Amazon EKS].
 
@@ -46,7 +46,7 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 	istio-telemetry-7fb48dc68b-4nxq2         2/2     Running   0          1m
 	prometheus-76db5fddd5-6vf7w              1/1     Running   0          1m
 
-== Deploy Istio-enabled Application
+== 5.3 Deploy Istio-enabled Application
 
 **Code**
 
@@ -91,7 +91,7 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 +
 It takes about three minutes for the ELB to be ready to respond.
 
-== Round Robin between Two Deployments
+== 5.4 Round Robin between Two Deployments
 
 . Deploy application with two versions of `greeting`, one that returns `Hello` and another that returns `Howdy`:
 
@@ -135,7 +135,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
   	echo
   done
 
-== Traffic Shifting using Istio
+== 5.5 Traffic Shifting using Istio
 
 **Code**
 
@@ -151,7 +151,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
   	echo
   done
 
-== Telemetry using Istio
+== 5.6 Visulize your mesh
 
 **Code**
 
