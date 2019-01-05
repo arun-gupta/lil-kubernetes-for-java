@@ -30,27 +30,21 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 		--wait \
 		--name istio \
 		--namespace istio-system \
-		install/kubernetes/helm/istio \
-		--set tracing.enabled=true \
-		--set grafana.enabled=true
+		install/kubernetes/helm/istio
 
 . Verify the list of pods:
-+
+
 	kubectl get pods -n istio-system
 	NAME                                     READY   STATUS    RESTARTS   AGE
-	grafana-7f6cd4bf56-nlc2k                 1/1     Running   0          1m
-	istio-citadel-7dd558dcf-gtkxx            1/1     Running   0          1m
-	istio-egressgateway-88887488d-w8tgx      1/1     Running   0          1m
-	istio-galley-787758f7b8-s5v66            1/1     Running   0          1m
-	istio-ingressgateway-58c77897cc-2ml4d    1/1     Running   0          1m
-	istio-pilot-868cdfb5f7-pknvl             2/2     Running   0          1m
-	istio-policy-56c4579578-vwl8v            2/2     Running   0          1m
-	istio-sidecar-injector-d7f98d9cb-t6hht   1/1     Running   0          1m
-	istio-telemetry-7fb48dc68b-f9qrs         2/2     Running   0          1m
-	istio-tracing-7596597bd7-8gxwt           1/1     Running   0          1m
-	prometheus-76db5fddd5-pp558              1/1     Running   0          1m
-+
-Check that both Tracing and Grafana add-ons are enabled.
+	istio-citadel-7dd558dcf-68lss            1/1     Running   0          1m
+	istio-egressgateway-88887488d-pptdr      1/1     Running   0          1m
+	istio-galley-787758f7b8-hvsgw            1/1     Running   0          1m
+	istio-ingressgateway-58c77897cc-znscr    1/1     Running   0          1m
+	istio-pilot-868cdfb5f7-r8wbr             2/2     Running   0          1m
+	istio-policy-56c4579578-4n6rn            2/2     Running   0          1m
+	istio-sidecar-injector-d7f98d9cb-9r4jl   1/1     Running   0          1m
+	istio-telemetry-7fb48dc68b-4nxq2         2/2     Running   0          1m
+	prometheus-76db5fddd5-6vf7w              1/1     Running   0          1m
 
 == Deploy Istio-enabled Application
 
@@ -130,8 +124,8 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 
 . Get the ingress gateway address:
 
-	$ export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-	$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+	export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+	export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
 
 . Access application multipe times to see about 50% split between two responses:
 
@@ -145,7 +139,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 
 **Code**
 
-. Update `VirtualService` to split traffic between 90% to `Hello` and 10% to `Howdy` version of the `greeting` service.
+. Update `weight` attribute of `VirtualService` to split traffic between 90% to `Hello` and 10% to `Howdy` version of the `greeting` service.
 
 	kubectl apply -f standalone/greeting-istio.yaml
 
@@ -161,32 +155,54 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 
 **Code**
 
-. By default, Grafana is disabled. `--set grafana.enabled=true` was used during Istio installation to ensure Grafana was enabled. Alternatively, the Grafana add-on can be installed as:
+. By default, Kiali is disabled and needs to be enabled. First, define the credentials that you want to use for Kiali username and passphrase:
 
-	kubectl apply -f install/kubernetes/addons/grafana.yaml
+	KIALI_USERNAME=$(read -p 'Kiali Username: ' uval && echo -n $uval | base64)
+	KIALI_PASSPHRASE=$(read -sp 'Kiali Passphrase: ' pval && echo -n $pval | base64)
+
+. Store these in a `Secret`:
+
+	cat <<EOF | kubectl apply -f -
+	apiVersion: v1
+	kind: Secret
+	metadata:
+	  name: kiali
+	  namespace: istio-system
+	  labels:
+	    app: kiali
+	type: Opaque
+	data:
+	  username: $KIALI_USERNAME
+	  passphrase: $KIALI_PASSPHRASE
+	EOF
+
+. Enable Kiali and apply the changes:
+
+	helm template --set kiali.enabled=true install/kubernetes/helm/istio --name istio --namespace istio-system > $HOME/istio.yaml
+	kubectl apply -f $HOME/istio.yaml
 
 . Verify:
 
-	kubectl get pods -l app=grafana -n istio-system
-	NAME                       READY     STATUS    RESTARTS   AGE
-	grafana-7f6cd4bf56-nlc2k   1/1       Running   0          10m
+	kubectl get pods -n istio-system -l app=kiali
+	NAME                     READY   STATUS    RESTARTS   AGE
+	kiali-58bf795c96-pdf9b   1/1     Running   0          32s
 
-. Forward Istio dashboard using Grafana UI:
+. Open Kiali UI:
 
 	kubectl -n istio-system \
 		port-forward $(kubectl -n istio-system \
-			get pod -l app=grafana \
-			-o jsonpath='{.items[0].metadata.name}') 3000:3000 &
+			get pod -l app=kiali \
+			-o jsonpath='{.items[0].metadata.name}') 20001:20001 &
 
-. View Istio dashboard http://localhost:3000/d/1/istio-dashboard?
+. View Kiali dashboard http://localhost:20001/kiali
 . Invoke the endpoint a few times:
 
 	for i in {1..50}
 	do
-		curl -q http://$(kubectl get svc/greeting-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+		curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
 		echo
 	done
 
-. Show the Grafana dashboard:
+. Show the Kiali dashboard:
 +
 image::images/istio-dashboard.png[]
