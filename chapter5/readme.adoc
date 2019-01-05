@@ -136,28 +136,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 
 **Code**
 
-. By default, Kiali is disabled and needs to be enabled. First, define the credentials that you want to use for Kiali username and passphrase:
-
-	KIALI_USERNAME=$(read -p 'Kiali Username: ' uval && echo -n $uval | base64)
-	KIALI_PASSPHRASE=$(read -sp 'Kiali Passphrase: ' pval && echo -n $pval | base64)
-
-. Store these in a `Secret`:
-
-	cat <<EOF | kubectl apply -f -
-	apiVersion: v1
-	kind: Secret
-	metadata:
-	  name: kiali
-	  namespace: istio-system
-	  labels:
-	    app: kiali
-	type: Opaque
-	data:
-	  username: $KIALI_USERNAME
-	  passphrase: $KIALI_PASSPHRASE
-	EOF
-
-. Enable Kiali and apply the changes:
+. By default, Kiali is disabled and needs to be enabled. Enable Kiali and apply the changes:
 
 	helm template --set kiali.enabled=true install/kubernetes/helm/istio --name istio --namespace istio-system > $HOME/istio.yaml
 	kubectl apply -f $HOME/istio.yaml
@@ -175,7 +154,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 			get pod -l app=kiali \
 			-o jsonpath='{.items[0].metadata.name}') 20001:20001 &
 
-. View Kiali dashboard http://localhost:20001/kiali
+. View Kiali dashboard http://localhost:20001/
 . Invoke the endpoint a few times:
 
 	for i in {1..50}
@@ -186,4 +165,13 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 
 . Show the Kiali dashboard:
 +
-image::images/istio-dashboard.png[]
+image::images/kiali-dashboard.png[]
++
+Click on `Graph`, choose `Workload` to see a dynamic graph:
++
+image::images/kiali-graph.png[]
++
+Click on `Applications`, `greeting` to see details about the application:
++
+image::images/kiali-apps.png[]
+
