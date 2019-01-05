@@ -18,57 +18,64 @@ This application will be deployed to an https://aws.amazon.com/eks/[Amazon EKS c
 
 . Check eksctl version:
 
-	2018-12-14T18:21:05-06:00 [ℹ]  versionInfo = map[string]string{"builtAt":"2018-11-09T16:15:40Z", "gitCommit":"191474b2b0a6e6856b5f9c652c38b5f2f01bf7c9", "gitTag":"0.1.11"}
+	$ eksctl version
+	[ℹ]  version.Info{BuiltAt:"", GitCommit:"", GitTag:"0.1.16"}
 
 . Download AWS IAM Authenticator:
 +
 	curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator
+	chmod +x aws-iam-authenticator
 +
 Include the directory where the CLI is downloaded to your `PATH`.
 +
 . Create EKS cluster:
 
-	eksctl create cluster --name myeks --nodes 4 --region us-east-1
-	2018-12-14T17:58:11-06:00 [ℹ]  using region us-east-1
-	2018-12-14T17:58:25-06:00 [ℹ]  setting availability zones to [us-east-1c us-east-1a]
-	2018-12-14T17:58:25-06:00 [ℹ]  subnets for us-east-1c - public:192.168.0.0/19 private:192.168.64.0/19
-	2018-12-14T17:58:25-06:00 [ℹ]  subnets for us-east-1a - public:192.168.32.0/19 private:192.168.96.0/19
-	2018-12-14T17:58:26-06:00 [ℹ]  using "ami-0a0b913ef3249b655" for nodes
-	2018-12-14T17:58:26-06:00 [ℹ]  creating EKS cluster "myeks" in "us-east-1" region
-	2018-12-14T17:58:26-06:00 [ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
-	2018-12-14T17:58:26-06:00 [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-east-1 --name=myeks'
-	2018-12-14T17:58:26-06:00 [ℹ]  creating cluster stack "eksctl-myeks-cluster"
-	2018-12-14T18:10:34-06:00 [ℹ]  creating nodegroup stack "eksctl-myeks-nodegroup-0"
-	2018-12-14T18:14:29-06:00 [✔]  all EKS cluster resource for "myeks" had been created
-	2018-12-14T18:14:29-06:00 [✔]  saved kubeconfig as "/Users/argu/.kube/config"
-	2018-12-14T18:14:35-06:00 [ℹ]  the cluster has 1 nodes
-	2018-12-14T18:14:35-06:00 [ℹ]  node "ip-192-168-28-25.ec2.internal" is not ready
-	2018-12-14T18:14:35-06:00 [ℹ]  waiting for at least 4 nodes to become ready
-	2018-12-14T18:15:01-06:00 [ℹ]  the cluster has 4 nodes
-	2018-12-14T18:15:01-06:00 [ℹ]  node "ip-192-168-28-25.ec2.internal" is ready
-	2018-12-14T18:15:01-06:00 [ℹ]  node "ip-192-168-3-103.ec2.internal" is ready
-	2018-12-14T18:15:01-06:00 [ℹ]  node "ip-192-168-44-70.ec2.internal" is ready
-	2018-12-14T18:15:01-06:00 [ℹ]  node "ip-192-168-59-35.ec2.internal" is ready
-	2018-12-14T18:15:06-06:00 [ℹ]  kubectl command should work with "/Users/argu/.kube/config", try 'kubectl get nodes'
-	2018-12-14T18:15:06-06:00 [✔]  EKS cluster "myeks" in "us-east-1" region is ready
+	[ℹ]  using region us-west-2
+	[ℹ]  setting availability zones to [us-west-2a us-west-2b us-west-2c]
+	[ℹ]  subnets for us-west-2a - public:192.168.0.0/19 private:192.168.96.0/19
+	[ℹ]  subnets for us-west-2b - public:192.168.32.0/19 private:192.168.128.0/19
+	[ℹ]  subnets for us-west-2c - public:192.168.64.0/19 private:192.168.160.0/19
+	[ℹ]  using "ami-094fa4044a2a3cf52" for nodes
+	[ℹ]  creating EKS cluster "myeks" in "us-west-2" region
+	[ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
+	[ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-west-2 --name=myeks'
+	[ℹ]  creating cluster stack "eksctl-myeks-cluster"
+	[ℹ]  creating nodegroup stack "eksctl-myeks-nodegroup-0"
+	[✔]  all EKS cluster resource for "myeks" had been created
+	[✔]  saved kubeconfig as "/Users/argu/.kube/config"
+	[ℹ]  the cluster has 0 nodes
+	[ℹ]  waiting for at least 4 nodes to become ready
+	[ℹ]  the cluster has 4 nodes
+	[ℹ]  node "ip-192-168-23-30.us-west-2.compute.internal" is ready
+	[ℹ]  node "ip-192-168-31-17.us-west-2.compute.internal" is ready
+	[ℹ]  node "ip-192-168-47-237.us-west-2.compute.internal" is ready
+	[ℹ]  node "ip-192-168-64-132.us-west-2.compute.internal" is ready
+	[ℹ]  kubectl command should work with "/Users/argu/.kube/config", try 'kubectl get nodes'
+	[✔]  EKS cluster "myeks" in "us-west-2" region is ready
 
 . Check the nodes:
 
 	kubectl get nodes
-	NAME                            STATUS   ROLES    AGE   VERSION
-	ip-192-168-28-25.ec2.internal   Ready    <none>   16m   v1.10.3
-	ip-192-168-3-103.ec2.internal   Ready    <none>   15m   v1.10.3
-	ip-192-168-44-70.ec2.internal   Ready    <none>   16m   v1.10.3
-	ip-192-168-59-35.ec2.internal   Ready    <none>   15m   v1.10.3
+	NAME                                           STATUS   ROLES    AGE   VERSION
+	ip-192-168-23-30.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
+	ip-192-168-31-17.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
+	ip-192-168-47-237.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
+	ip-192-168-64-132.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
 
 . Get the list of configs:
 +
 	kubectl config get-contexts
-	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
-	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
-	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop   
+	CURRENT   NAME                             CLUSTER                      AUTHINFO                         NAMESPACE
+	*         arun@myeks.us-west-2.eksctl.io   myeks.us-west-2.eksctl.io    arun@myeks.us-west-2.eksctl.io   
+	          docker-for-desktop               docker-for-desktop-cluster   docker-for-desktop
 +
 `*` indicates that kubectl is now configured to talk to the newly created cluster.
++
+. Print the client and server version:
+
+	kubectl version --short
+	Client Version: v1.13.1
+	Server Version: v1.11.5-eks-6bad6d
 
 == Migrate Application to Kubernetes Cluster on AWS
 
@@ -76,9 +83,9 @@ Include the directory where the CLI is downloaded to your `PATH`.
 
 . Explicitly set the context:
 
-    kubectl config use-context arun@myeks.us-east-1.eksctl.io
+    kubectl config use-context arun@myeks.us-west-2.eksctl.io
 
-. Install Helm in EKS:
+. Helm's server-side component, Tiller, requires special permission on the kubernetes cluster. We need to build a Service Account for tiller to use and enable permissions for it. Then we can install Helm in EKS:
 
 	kubectl -n kube-system create sa tiller
 	kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
@@ -106,9 +113,9 @@ Include the directory where the CLI is downloaded to your `PATH`.
 . Get the service:
 +
 	kubectl get svc
-	NAME         TYPE           CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)                         AGE
-	greeting     LoadBalancer   10.100.12.193   a2d4c846f000111e9be5e0a988475aff-1529459134.us-east-1.elb.amazonaws.com   8080:32676/TCP,5005:32536/TCP   20s
-	kubernetes   ClusterIP      10.100.0.1      <none>                                                                    443/TCP                         26m
+	NAME         TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)                         AGE
+	greeting     LoadBalancer   10.100.110.146   a798a47cd104211e986290adde103247-521253658.us-west-2.elb.amazonaws.com   8080:31627/TCP,5005:30216/TCP   2m
+	kubernetes   ClusterIP      10.100.0.1       <none>                                                                   443/TCP                         18h
 +
 It shows the port `8080` and `5005` are published and an Elastic Load Balancer is provisioned. It takes about three minutes for the load balancer to be ready.
 +
@@ -121,6 +128,3 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 
 	helm delete --purge myapp
 
-== Backup and Restore Cluster using Heptio Ark
-
-TODO
