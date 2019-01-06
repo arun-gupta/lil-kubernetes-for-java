@@ -1,4 +1,5 @@
-**/m2.tar.gz
+**/repository
+**/*.tar.gz
 **/target
 **/.idea
 **/*.iml
