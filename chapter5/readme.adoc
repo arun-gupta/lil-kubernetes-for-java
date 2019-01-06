@@ -134,6 +134,8 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 
 == 5.6 Visulize Mesh using Kiali
 
+Kiali is yet another Greek word meaning monocular or spyglass. Kiali project provides answers to the questions: What microservices are part of my Istio service mesh and how are they connected?
+
 **Code**
 
 . By default, Kiali is disabled and needs to be enabled. Enable Kiali and apply the changes:
@@ -163,7 +165,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 		echo
 	done
 
-. Show the Kiali dashboard:
+. Show Kiali dashboard:
 +
 image::images/kiali-dashboard.png[]
 +
