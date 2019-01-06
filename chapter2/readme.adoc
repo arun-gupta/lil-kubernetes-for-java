@@ -55,12 +55,10 @@ CMD java -version
 
 == 2.4 Run Docker Container
 
-. Run container:
+. Run container and show logs:
 
     docker container run -p 8080:8080 arungupta/greeting
-+
-Show logs.
-+
+
 . Access application:
 
 	curl http://localhost:8080/hello
@@ -98,9 +96,10 @@ Explain forced termination.
 
 The benefits of using Jib over a multi-stage Dockerfile build include:
 
-* Don't need to install Docker or run a Docker daemon
-* Don't need to write a Dockerfile or build the archive of m2 dependencies
-* Much faster because it leverages Docker image layer caching
+. Fast because it leverages Docker image layer caching
+. No need for Docker daemon
+. No need to write a Dockerfile or build the archive of m2 dependencies
+. Maven and Gradle plugin
 
 **Code**
 
