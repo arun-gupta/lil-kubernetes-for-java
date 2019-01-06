@@ -84,6 +84,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 	kubectl get pods -l greeting=hello -o jsonpath={.items[*].spec.containers[*].name}
 	greeting istio-proxy
 
+Same Java application, now two different versions deployed to a Kubernetes cluster.
 
 == 5.4 Create Istio Resources
 
@@ -131,6 +132,8 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
   	curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
   	echo
   done
+
+Same Java application, now traffic splitting 90% to Hello version and 10% to Howdy version. Both are deployed to the same Kubernetes cluster.
 
 == 5.6 Visulize Mesh using Kiali
 
