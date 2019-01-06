@@ -36,20 +36,36 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 		&& chmod +x skaffold
 
 . Open http://localhost:8080/hello in browser. This will show that the page is not available.
+. Copy `manifests/standalone/greeting.yaml` to `app` directory
 . Run Skaffold in the application directory:
 
     cd app
     skaffold dev
 
 . Refresh the page in browser to see the output.
+. In IntelliJ, change `Hello` to `Howdy`, save, watch the Skaffold console output, refresh the page to see the updated output.
+
+Same Java application, now continuously built through Skaffold and deployed to a local Kubernetes cluster. This can also be integrated with Jib. This can also be deployed to a remote Kubernetes cluster.
 
 === Code Pipeline
+
+**Prereq**
+
+. Create GitHub access token
 
 **Code**
 
 https://eksworkshop.com/codepipeline/codepipeline/
 
-Use the following command to access the service:
+. Create IAM role
+. Modify aws-auth ConfigMap
+. Talk about GitHub access token
+. Create CodePipeline
+. https://console.aws.amazon.com/codesuite/codepipeline/pipelines[Show CodePipline]
+. Tail logs
+. Use the following command to access the service:
 
 	curl http://$(kubectl get svc/hello-k8s -o jsonpath='{.status.loadBalancer.ingress[0].hostname}’)
+
+Same Java application, now continuously built through AWS CodePipeline and deployed to an Amazon EKS cluster.
 
