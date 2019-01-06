@@ -1,6 +1,6 @@
 FROM maven:3.5-jdk-8 as BUILD
 
-ADD repository.tar.gz /usr/share/maven/ref/
+#ADD repository.tar.gz /usr/share/maven/ref/
 
 COPY . /usr/src/app
 WORKDIR /usr/src/app
