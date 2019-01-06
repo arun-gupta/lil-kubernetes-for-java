@@ -34,7 +34,7 @@ CMD java -version
 .. Run a container
 .. Port forward
 
-== 2.3 Build Docker Image
+== 2.3 Build Docker Image using Dockerfile
 
 **Code**
 
