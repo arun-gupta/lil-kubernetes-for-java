@@ -1,0 +1,9 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  artifacts:
+  - image: arungupta/greeting
+deploy:
+  kubectl:
+    manifests:
+      - greeting.yaml
