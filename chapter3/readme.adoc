@@ -35,15 +35,19 @@
 
 **Code**
 
-. Docker, Preferences, Kubernetes, Enable Kubernetes, Apply
-. Wait for Kubernetes to start. If this first time, then it'll take some time to download all the related Docker images on your local machine.
+. Install `kubectl`:
+
+	brew install kubernetes-cli
+
+. Install Virtualbox:
+
+	brew cask install virtualbox
+
+. Download minikube latest release: https://github.com/kubernetes/minikube/releases/latest
+. Start minikube: `minikube start`
 . Show the list of contexts:
 
     kubectl config get-contexts
-
-. Configure kubectl CLI for Kubernetes cluster
-
-	kubectl config use-context docker-for-desktop
 
 . Check the version:
 
