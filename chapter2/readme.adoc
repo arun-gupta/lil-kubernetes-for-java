@@ -106,11 +106,15 @@ The benefits of using Jib over a multi-stage Dockerfile build include:
 . Explain Jib maven profile
 . Create Docker image to Docker daemon:
 
-    mvn package jib:build -Pjib
-
+    mvn package -Pjib
++
 Alternatively, Jib can also build without Docker daemon, and directly to a registry:
-
++
     mvn package jib:build -Pjib
++
+. Show image history:
+
+	docker image history arungupta/greeting
 
 == 2.6 Minimal Docker Image using Custom JRE
 
