@@ -132,11 +132,11 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 
 . Clone the repo:
 
-	git clone https://github.com/arun-gupta/lynda-k8s-for-java
+	git clone https://github.com/arun-gupta/lil-kubernetes-for-java
 
 . Build the application:
 
-	cd lynda-k8s-for-java/app
+	cd lil-kubernetes-for-java/app
 	sudo apt install -y maven
 	mvn package
 
@@ -151,6 +151,10 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 	sudo docker image build -t arungupta/greeting .
 
 **Code**
+
+We noticed that our image was 489MB. Even though we used OpenJDK:8-JRE as the base image, but it still contains a lot of JDK functionality that is not needed by our application. JDK 9 introduced module systems that that allows you to selectively include the functionality needed for your application, and leaving everything else behind. We'll look at how we our image size can be reduced using the tools provided by JDK 9 onwards.
+
+jlink is a tool available in JDK 9 onwards, and allows to assemble and optimize a set of modules and their dependencies into a custom runtime image.
 
 . Create a custom JRE for the Spring Boot application:
 
