@@ -110,7 +110,7 @@ The benefits of using Jib over a multi-stage Dockerfile build include:
 +
 Alternatively, Jib can also build without Docker daemon, and directly to a registry:
 +
-    mvn package jib:build -Pjib
+    mvn jib:build -Pjib
 +
 . Show image history:
 
