@@ -116,8 +116,8 @@ Same Java application, now two different versions deployed to a Kubernetes clust
 
   for i in {1..10}
   do
-  	curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
-  	echo
+    curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
+    echo
   done
 
 == 5.5 Traffic Shifting using Istio
