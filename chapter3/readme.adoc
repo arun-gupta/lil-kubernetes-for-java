@@ -166,6 +166,10 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 +
 	helm init --upgrade
 +
+. Show tiller is running:
+
+	kubectl get pods -n kube-system
+
 . Change to `manifests/charts` directory
 . Install the Helm chart:
 
