@@ -32,52 +32,55 @@ Include the directory where the CLI is downloaded to your `PATH`.
 
 	eksctl create cluster --name k8s-course --nodes 4
 	[ℹ]  using region us-west-2
-	[ℹ]  setting availability zones to [us-west-2a us-west-2b us-west-2c]
-	[ℹ]  subnets for us-west-2a - public:192.168.0.0/19 private:192.168.96.0/19
-	[ℹ]  subnets for us-west-2b - public:192.168.32.0/19 private:192.168.128.0/19
+	[ℹ]  setting availability zones to [us-west-2b us-west-2a us-west-2c]
+	[ℹ]  subnets for us-west-2b - public:192.168.0.0/19 private:192.168.96.0/19
+	[ℹ]  subnets for us-west-2a - public:192.168.32.0/19 private:192.168.128.0/19
 	[ℹ]  subnets for us-west-2c - public:192.168.64.0/19 private:192.168.160.0/19
-	[ℹ]  using "ami-094fa4044a2a3cf52" for nodes
-	[ℹ]  creating EKS cluster "myeks" in "us-west-2" region
+	[ℹ]  nodegroup "ng-8c5c6d93" will use "ami-094fa4044a2a3cf52" [AmazonLinux2/1.11]
+	[ℹ]  creating EKS cluster "k8s-course" in "us-west-2" region
 	[ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
-	[ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-west-2 --name=myeks'
-	[ℹ]  creating cluster stack "eksctl-myeks-cluster"
-	[ℹ]  creating nodegroup stack "eksctl-myeks-nodegroup-0"
-	[✔]  all EKS cluster resource for "myeks" had been created
-	[✔]  saved kubeconfig as "/Users/argu/.kube/config"
-	[ℹ]  the cluster has 0 nodes
-	[ℹ]  waiting for at least 4 nodes to become ready
-	[ℹ]  the cluster has 4 nodes
-	[ℹ]  node "ip-192-168-23-30.us-west-2.compute.internal" is ready
-	[ℹ]  node "ip-192-168-31-17.us-west-2.compute.internal" is ready
-	[ℹ]  node "ip-192-168-47-237.us-west-2.compute.internal" is ready
-	[ℹ]  node "ip-192-168-64-132.us-west-2.compute.internal" is ready
-	[ℹ]  kubectl command should work with "/Users/argu/.kube/config", try 'kubectl get nodes'
-	[✔]  EKS cluster "myeks" in "us-west-2" region is ready
+	[ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-west-2 --name=k8s-course'
+	[ℹ]  creating cluster stack "eksctl-k8s-course-cluster"
+	[ℹ]  creating nodegroup stack "eksctl-k8s-course-nodegroup-ng-8c5c6d93"
+	[✔]  all EKS cluster resource for "k8s-course" had been created
+	[✔]  saved kubeconfig as "/Users/arungupta/.kube/config"
+	[ℹ]  nodegroup "ng-8c5c6d93" has 0 node(s)
+	[ℹ]  waiting for at least 4 node(s) to become ready in "ng-8c5c6d93"
+	[ℹ]  nodegroup "ng-8c5c6d93" has 4 node(s)
+	[ℹ]  node "ip-192-168-18-187.us-west-2.compute.internal" is ready
+	[ℹ]  node "ip-192-168-19-14.us-west-2.compute.internal" is ready
+	[ℹ]  node "ip-192-168-51-15.us-west-2.compute.internal" is ready
+	[ℹ]  node "ip-192-168-65-119.us-west-2.compute.internal" is ready
+	[ℹ]  kubectl command should work with "/Users/arungupta/.kube/config", try 'kubectl get nodes'
+	[✔]  EKS cluster "k8s-course" in "us-west-2" region is ready
 
-. Show EKS service in the console: http://console.aws.amazon.com/console/home?region=us-west-2.
 . Get the list of configs:
 +
-	kubectl config get-contexts
-	CURRENT   NAME                             CLUSTER                      AUTHINFO                         NAMESPACE
-	*         arun@myeks.us-west-2.eksctl.io   myeks.us-west-2.eksctl.io    arun@myeks.us-west-2.eksctl.io   
-	          docker-for-desktop               docker-for-desktop-cluster   docker-for-desktop
+kubectl config get-contexts
+
+CURRENT   NAME                                  CLUSTER                          AUTHINFO                              NAMESPACE
+*         arun@k8s-course.us-west-2.eksctl.io   k8s-course.us-west-2.eksctl.io   arun@k8s-course.us-west-2.eksctl.io   
+          docker-for-desktop                    docker-for-desktop-cluster       docker-for-desktop                    
+          minikube                              minikube                         minikube 
 +
 `*` indicates that kubectl is now configured to talk to the newly created cluster.
 +
 . Check the nodes:
 
 	kubectl get nodes
-	NAME                                           STATUS   ROLES    AGE   VERSION
-	ip-192-168-23-30.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
-	ip-192-168-31-17.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
-	ip-192-168-47-237.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
-	ip-192-168-64-132.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
+	NAME                                           STATUS    ROLES     AGE       VERSION
+	ip-192-168-18-187.us-west-2.compute.internal   Ready     <none>    1m        v1.11.5
+	ip-192-168-19-14.us-west-2.compute.internal    Ready     <none>    1m        v1.11.5
+	ip-192-168-51-15.us-west-2.compute.internal    Ready     <none>    1m        v1.11.5
+	ip-192-168-65-119.us-west-2.compute.internal   Ready     <none>    1m        v1.11.5
 
 . Print the client and server version:
 
 	kubectl version --short
 	Client Version: v1.13.1
 	Server Version: v1.11.5-eks-6bad6d
+
+. Show EKS service in the console: http://console.aws.amazon.com/console/home?region=us-west-2.
 
 == 4.3 Migrate Application to Kubernetes Cluster on AWS
 
