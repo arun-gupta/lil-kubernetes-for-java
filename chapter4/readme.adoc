@@ -54,16 +54,7 @@ Include the directory where the CLI is downloaded to your `PATH`.
 	[ℹ]  kubectl command should work with "/Users/argu/.kube/config", try 'kubectl get nodes'
 	[✔]  EKS cluster "myeks" in "us-west-2" region is ready
 
-. Show the console: 
-. Check the nodes:
-
-	kubectl get nodes
-	NAME                                           STATUS   ROLES    AGE   VERSION
-	ip-192-168-23-30.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
-	ip-192-168-31-17.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
-	ip-192-168-47-237.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
-	ip-192-168-64-132.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
-
+. Show EKS service in the console: http://console.aws.amazon.com/console/home?region=us-west-2.
 . Get the list of configs:
 +
 	kubectl config get-contexts
@@ -73,6 +64,15 @@ Include the directory where the CLI is downloaded to your `PATH`.
 +
 `*` indicates that kubectl is now configured to talk to the newly created cluster.
 +
+. Check the nodes:
+
+	kubectl get nodes
+	NAME                                           STATUS   ROLES    AGE   VERSION
+	ip-192-168-23-30.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
+	ip-192-168-31-17.us-west-2.compute.internal    Ready    <none>   18h   v1.11.5
+	ip-192-168-47-237.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
+	ip-192-168-64-132.us-west-2.compute.internal   Ready    <none>   18h   v1.11.5
+
 . Print the client and server version:
 
 	kubectl version --short
