@@ -58,10 +58,10 @@ Include the directory where the CLI is downloaded to your `PATH`.
 +
 kubectl config get-contexts
 
-CURRENT   NAME                                  CLUSTER                          AUTHINFO                              NAMESPACE
-*         arun@k8s-course.us-west-2.eksctl.io   k8s-course.us-west-2.eksctl.io   arun@k8s-course.us-west-2.eksctl.io   
-          docker-for-desktop                    docker-for-desktop-cluster       docker-for-desktop                    
-          minikube                              minikube                         minikube 
+	CURRENT   NAME                                  CLUSTER                          AUTHINFO                              NAMESPACE
+	*         arun@k8s-course.us-west-2.eksctl.io   k8s-course.us-west-2.eksctl.io   arun@k8s-course.us-west-2.eksctl.io   
+	          docker-for-desktop                    docker-for-desktop-cluster       docker-for-desktop                    
+	          minikube                              minikube                         minikube 
 +
 `*` indicates that kubectl is now configured to talk to the newly created cluster.
 +
