@@ -1,12 +1,12 @@
 = Chapter 4: Kubernetes Cluster on AWS
 
-== Introduction to Amazon EKS
+== 4.1 Introduction to Amazon EKS
 
 **Slides**
 
 . Introduction to Amazon EKS
 
-== Create an EKS Cluster
+== 4.2 Create an EKS Cluster
 
 **Code**
 
@@ -30,6 +30,7 @@ Include the directory where the CLI is downloaded to your `PATH`.
 +
 . Create EKS cluster:
 
+	eksctl create cluster --name k8s-course --nodes 4
 	[ℹ]  using region us-west-2
 	[ℹ]  setting availability zones to [us-west-2a us-west-2b us-west-2c]
 	[ℹ]  subnets for us-west-2a - public:192.168.0.0/19 private:192.168.96.0/19
@@ -53,6 +54,7 @@ Include the directory where the CLI is downloaded to your `PATH`.
 	[ℹ]  kubectl command should work with "/Users/argu/.kube/config", try 'kubectl get nodes'
 	[✔]  EKS cluster "myeks" in "us-west-2" region is ready
 
+. Show the console: 
 . Check the nodes:
 
 	kubectl get nodes
@@ -77,7 +79,7 @@ Include the directory where the CLI is downloaded to your `PATH`.
 	Client Version: v1.13.1
 	Server Version: v1.11.5-eks-6bad6d
 
-== Migrate Application to Kubernetes Cluster on AWS
+== 4.3 Migrate Application to Kubernetes Cluster on AWS
 
 **Code**
 
