@@ -73,15 +73,18 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 	greeting-hello   1         1         1            1           31s
 	greeting-howdy   1         1         1            1           31s
 
-. Check pods for each deployemnt and note that it has two containers (one for the application and one for the sidecar):
+. Check pods for each deployment and note that it has two containers (one for the application and one for the sidecar):
 
+	kubectl get pods
 	NAME                              READY   STATUS    RESTARTS   AGE
 	greeting-hello-6799458d68-z7skl   2/2     Running   0          32s
 	greeting-howdy-f547698d6-gwjx9    2/2     Running   0          32s
 
 . Get the list of containers in the pod:
 
-	kubectl get pods -l greeting=hello -o jsonpath={.items[*].spec.containers[*].name}
+	kubectl get pods \
+		-l greeting=hello \
+		-o jsonpath={.items[*].spec.containers[*].name}
 	greeting istio-proxy
 
 Same Java application, now two different versions deployed to a Kubernetes cluster.
