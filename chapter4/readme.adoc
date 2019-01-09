@@ -88,7 +88,7 @@ kubectl config get-contexts
 
 . Explicitly set the context:
 
-    kubectl config use-context arun@myeks.us-west-2.eksctl.io
+    kubectl config use-context arun@k8s-course.us-west-2.eksctl.io
 
 . Helm's server-side component, Tiller, requires special permission on the kubernetes cluster. We need to build a Service Account for tiller to use and enable permissions for it. Then we can install Helm in EKS:
 
