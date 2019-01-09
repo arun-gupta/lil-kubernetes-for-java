@@ -35,15 +35,29 @@
 
 **Code**
 
-. Install `kubectl`:
+. Download Docker for Desktop
+. Enable Kubernetes
+. Show the list of contexts:
 
-	brew install kubernetes-cli
+    kubectl config get-contexts
+
+. Check the version:
+
+	kubectl version
+
+. Check the nodes:
+
+	kubectl get nodes
+
+== 3.5 Getting Started with Minikube
 
 . Install Virtualbox:
 
 	brew cask install virtualbox
 
-. Download minikube latest release: https://github.com/kubernetes/minikube/releases/latest
+. Install minikube:
+
+	brew cask install minikube
 . Start minikube: `minikube start`
 . Show the list of contexts:
 
@@ -57,11 +71,7 @@
 
 	kubectl get nodes
 
-. Check the resources:
-
-	kubectl api-resources
-
-== 3.5 Deploy to Kubernetes using Standalone Manifests
+== 3.6 Deploy to Kubernetes using Standalone Manifests
 
 **Code**
 
@@ -85,14 +95,14 @@
 
 . Access the application:
 
-	curl http://localhost:8080/hello
+	curl $(minikube service greeting --url)/hello
 
 . Delete service and deployment:
 
 	kubectl delete -f greeting-service.yaml
 	kubectl delete -f greeting-deployment.yaml
 
-== 3.6 Deploy to Kubernetes using Standalone Single Manifest
+== 3.7 Deploy to Kubernetes using Standalone Single Manifest
 
 **Code**
 
@@ -110,13 +120,13 @@
 
 . Access the application:
 
-	curl http://localhost:8080/hello
+	curl $(minikube service greeting --url)/hello
 
 . Delete deployment and service (a different way to delete):
 
 	kubectl delete deployment/greeting svc/greeting
 
-== 3.7 Introduction to Helm Charts
+== 3.8 Introduction to Helm Charts
 
 **Slides**
 
@@ -124,7 +134,7 @@
 . Key concepts - client, tiller, charts
 . Sample Helm chart
 
-== 3.8 Deploy Application to Kubernetes using Helm Charts
+== 3.9 Deploy Application to Kubernetes using Helm Charts
 
 **Code**
 
@@ -164,7 +174,7 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 	helm delete --purge myapp
 
-== 3.9 Debug Kubernetes Deployment using IntelliJ
+== 3.10 Debug Kubernetes Deployment using IntelliJ
 
 **Code**
 
