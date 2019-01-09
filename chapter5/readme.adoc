@@ -58,11 +58,11 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 
 	kubectl apply -f $(istioctl kube-inject -f manifest.yaml)
 
-. Change to `manifests` directory in the repo
+. Change to `manifests/charts` directory
 . Deploy application with two versions of `greeting` pod, one that returns `Hello` and another that returns `Howdy`:
 
   helm delete myapp --purge
-  helm install --name myapp charts/myapp-hello-howdy
+  helm install --name myapp myapp-hello-howdy
 +
 Note, there is no `type: LoadBalancer` in this case. The service will be exposed using Istio Ingress gateway so that Istio can do the traffic split.
 +
@@ -80,7 +80,7 @@ Note, there is no `type: LoadBalancer` in this case. The service will be exposed
 	greeting-hello-6799458d68-z7skl   2/2     Running   0          32s
 	greeting-howdy-f547698d6-gwjx9    2/2     Running   0          32s
 
-. Get the list of containers in the pod:
+. Get list of containers in the pod:
 
 	kubectl get pods \
 		-l greeting=hello \
