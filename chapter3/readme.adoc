@@ -58,12 +58,16 @@
 . Install minikube:
 
 	brew cask install minikube
-. Start minikube: `minikube start`
-. Show the list of contexts:
+
+. Start minikube:
+
+	minikube start
+
+. Show list of contexts:
 
     kubectl config get-contexts
 
-. Check the version:
+. Check version:
 
 	kubectl version
 
@@ -81,21 +85,27 @@
 	more greeting-deployment.yaml
 	more greeting-service.yaml
 
-. Deploy application to Kubernetes using separate manifests:
+. Create deploymnent:
 
-	kubectl create -f greeting-service.yaml
 	kubectl create -f greeting-deployment.yaml
 
-. Check service, deployment and pods:
+. Show status:
 
-	kubectl get svc
 	kubectl get deployment
 	kubectl get pods
 	kubectl logs <pod-name>
 
+. Create service:
+
+	kubectl create -f greeting-service.yaml
+
+. Show status:
+
+	kubectl get svc
+
 . Access the application:
 
-	curl $(minikube service greeting --url)/hello
+	curl http://localhost:8080/hello
 
 . Delete service and deployment:
 
@@ -120,7 +130,7 @@
 
 . Access the application:
 
-	curl $(minikube service greeting --url)/hello
+	curl http://localhost:8080/hello
 
 . Delete deployment and service (a different way to delete):
 
@@ -138,7 +148,6 @@
 
 **Code**
 
-. Change to `manifests/charts` directory
 . Install the Helm CLI:
 
 	brew install kubernetes-helm
@@ -157,6 +166,7 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 +
 	helm init --upgrade
 +
+. Change to `manifests/charts` directory
 . Install the Helm chart:
 
 	helm install --name myapp myapp
@@ -178,9 +188,9 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 **Code**
 
-You can debug a Kubernetes Pod if they're running locally on your machine. (TODO: Test for remote debugging)
+You can debug a Kubernetes Pod if they're running on your machine.
 
-This was tested using Docker for Mac/Kubernetes. Use the previously deployed Helm chart.
+This was tested using Docker Desktop.
 
 . Install the Helm chart:
 
