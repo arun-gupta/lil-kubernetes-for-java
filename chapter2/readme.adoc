@@ -28,6 +28,7 @@ FROM openjdk
 CMD java -version
 ```
 +
+... Amazon Corretto
 ... Multi-stage Dockerfile
 .. Build context
 .. Image tagging
@@ -152,7 +153,7 @@ Alternatively, Jib can also build without Docker daemon, and directly to a regis
 
 **Code**
 
-We noticed that our image was 489MB. Even though we used OpenJDK:8-JRE as the base image, but it still contains a lot of JDK functionality that is not needed by our application. JDK 9 introduced module systems that that allows you to selectively include the functionality needed for your application, and leaving everything else behind. We'll look at how we our image size can be reduced using the tools provided by JDK 9 onwards.
+We noticed that our Docker image was 489MB. Even though we used OpenJDK:8-JRE as the base image, but it still contains a lot of JDK functionality that is not needed by our application. JDK 9 introduced module systems that allows you to selectively include the functionality needed for your application, and leave everything else behind. We'll look at how the Docker image size for our Java application can be reduced using the tools provided by JDK 9 onwards.
 
 jlink is a tool available in JDK 9 onwards, and allows to assemble and optimize a set of modules and their dependencies into a custom runtime image.
 
