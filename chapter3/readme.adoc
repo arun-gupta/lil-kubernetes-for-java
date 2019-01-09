@@ -188,6 +188,10 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 	helm delete --purge myapp
 
+. Reset helm:
+
+	helm reset --force
+
 == 3.10 Debug Kubernetes Deployment using IntelliJ
 
 **Code**
