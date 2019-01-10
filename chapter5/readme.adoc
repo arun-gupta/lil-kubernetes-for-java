@@ -158,17 +158,17 @@ Kiali is yet another Greek word meaning monocular or spyglass. Kiali project pro
 . Open Kiali UI:
 
 	kubectl -n istio-system \
-		port-forward $(kubectl -n istio-system \
-			get pod -l app=kiali \
-			-o jsonpath='{.items[0].metadata.name}') 20001:20001 &
+      port-forward $(kubectl -n istio-system \
+      get pod -l app=kiali \
+      -o jsonpath='{.items[0].metadata.name}') 20001:20001 &
 
 . View Kiali dashboard http://localhost:20001/
 . Invoke the endpoint a few times:
 
 	for i in {1..50}
 	do
-		curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
-		echo
+      curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
+      echo
 	done
 
 . Show Kiali dashboard:
