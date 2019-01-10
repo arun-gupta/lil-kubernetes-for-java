@@ -62,13 +62,9 @@ Same Java application, now continuously built through Skaffold and deployed to a
 .. Key benefits
 .. Workflow
 
-**Prereq**
-
-. Create GitHub access token
-
 **Code**
 
-https://eksworkshop.com/codepipeline/codepipeline/
+https://eksworkshop.com/codepipeline/
 
 . Create IAM role
 . Modify aws-auth ConfigMap
