@@ -17,23 +17,24 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 . Check context:
 
 	kubectl config get-contexts
-	CURRENT   NAME                               CLUSTER                       AUTHINFO                           NAMESPACE
-	*         arun@myeks.us-east-1.eksctl.io     myeks.us-east-1.eksctl.io     arun@myeks.us-east-1.eksctl.io     
-	          docker-for-desktop                 docker-for-desktop-cluster    docker-for-desktop
+	CURRENT   NAME                                  CLUSTER                          AUTHINFO                              NAMESPACE
+	*         arun@k8s-course.us-west-2.eksctl.io   k8s-course.us-west-2.eksctl.io   arun@k8s-course.us-west-2.eksctl.io   
+	          docker-for-desktop                    docker-for-desktop-cluster       docker-for-desktop                    
+	          minikube                              minikube                         minikube 
 
-. Change to use local Kubernetes cluster:
+. Change to local Kubernetes cluster:
 
 	kubectl config use-context docker-for-desktop
 
-. Check if the service is running:
+. Check if service is running:
 
 	kubectl get svc,deployment,pod
 
-. Check the Helm applications:
+. Check Helm applications:
 
 	helm ls
 
-. Delete the Helm chart:
+. Delete Helm chart:
 
 	helm delete myapp --purge
 
