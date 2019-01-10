@@ -18,9 +18,6 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
-          name: "http"
-        - containerPort: 5005
-          name: "debug"
 ---
 apiVersion: v1
 kind: Service
