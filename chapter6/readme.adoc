@@ -25,15 +25,28 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 	kubectl config use-context docker-for-desktop
 
+. Check if the service is running:
+
+	kubectl get svc,deployment,pod
+
+. Check the Helm applications:
+
+	helm ls
+
+. Delete the Helm chart:
+
+	helm delete myapp --purge
+
 . Download Skaffold:
 
 	brew install skaffold
 
-. Open http://localhost:8080/hello in browser. This will show that the page is not available.
 . Copy `manifests/standalone/greeting.yaml` to `app` directory
+. Change to `app` directory
+. Show `skaffold.yaml`
+. Open http://localhost:8080/hello in browser. This will show that the page is not available.
 . Run Skaffold in the application directory:
 
-    cd app
     skaffold dev
 
 . Refresh the page in browser to see the output.
