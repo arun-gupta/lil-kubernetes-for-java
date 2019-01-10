@@ -182,4 +182,14 @@ image::images/kiali-graph.png[]
 Click on `Applications`, `greeting` to see details about the application:
 +
 image::images/kiali-apps.png[]
++
+. `Ctrl` + `C` to terminate the port forwarding
+. Remove Istio resources:
+
+	kubectl apply -f manifests/standalone/greeting-istio.yaml
+
+. Remove Istio
+
+	helm delete istio --purge
+	kubectl delete -f install/kubernetes/helm/istio/templates/crds.yaml -n istio-system
 
