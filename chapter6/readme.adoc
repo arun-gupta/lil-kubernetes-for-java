@@ -54,7 +54,7 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 Same Java application, now continuously built through Skaffold and deployed to a local Kubernetes cluster. This can also be integrated with Jib. This can also be deployed to a remote Kubernetes cluster.
 
-=== 6.3 AWS CodePipeline
+=== 6.2 AWS CodePipeline
 
 **Slides**
 
