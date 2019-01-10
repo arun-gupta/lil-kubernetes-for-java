@@ -66,15 +66,26 @@ Same Java application, now continuously built through Skaffold and deployed to a
 
 https://eksworkshop.com/codepipeline/
 
+. Set up context:
+
+	kubectl config set-context arun@k8s-course.us-west-2.eksctl.io
+
+. Show and explain `buildspec.yaml`
 . Create IAM role
 . Modify aws-auth ConfigMap
 . Talk about GitHub access token
 . Create CodePipeline
+.. Change the region to `us-west-2`
+.. Specify GitHub user name and token
+.. Change the repo
+.. Change EKS cluster name
+.. Show CloudFormation
 . https://console.aws.amazon.com/codesuite/codepipeline/pipelines[Show CodePipline]
 . Tail logs
 . Use the following command to access the service:
 
-	curl http://$(kubectl get svc/hello-k8s -o jsonpath='{.status.loadBalancer.ingress[0].hostname}’)
+    curl http://$(kubectl get svc/greeting \
+      -o jsonpath='{.status.loadBalancer.ingress[0].hostname}’):8080/hello
 
 Same Java application, now continuously built through AWS CodePipeline and deployed to an Amazon EKS cluster.
 
