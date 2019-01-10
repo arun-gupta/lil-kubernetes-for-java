@@ -56,8 +56,7 @@ Include the directory where the CLI is downloaded to your `PATH`.
 
 . Get the list of configs:
 +
-kubectl config get-contexts
-
+	kubectl config get-contexts
 	CURRENT   NAME                                  CLUSTER                          AUTHINFO                              NAMESPACE
 	*         arun@k8s-course.us-west-2.eksctl.io   k8s-course.us-west-2.eksctl.io   arun@k8s-course.us-west-2.eksctl.io   
 	          docker-for-desktop                    docker-for-desktop-cluster       docker-for-desktop                    
