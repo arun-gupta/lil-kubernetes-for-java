@@ -85,7 +85,7 @@ https://eksworkshop.com/codepipeline/
 . Use the following command to access the service:
 
     curl http://$(kubectl get svc/greeting \
-      -o jsonpath='{.status.loadBalancer.ingress[0].hostname}’):8080/hello
+      -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
 
 Same Java application, now continuously built through AWS CodePipeline and deployed to an Amazon EKS cluster.
 
