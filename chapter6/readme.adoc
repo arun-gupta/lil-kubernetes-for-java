@@ -64,13 +64,12 @@ Same Java application, now continuously built through Skaffold and deployed to a
 
 **Code**
 
-https://eksworkshop.com/codepipeline/
-
 . Set up context:
 
 	kubectl config set-context arun@k8s-course.us-west-2.eksctl.io
 
 . Show and explain `buildspec.yaml`
+. Show https://eksworkshop.com/codepipeline/
 . Create IAM role
 . Modify aws-auth ConfigMap
 . Talk about GitHub access token
