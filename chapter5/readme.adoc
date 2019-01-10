@@ -132,8 +132,8 @@ Same Java application, now two different versions deployed to a Kubernetes clust
 
   for i in {1..50}
   do
-  	curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
-  	echo
+    curl -q -H"Host: greeting.com" http://$INGRESS_HOST:$INGRESS_PORT/hello
+    echo
   done
 
 Same Java application, now traffic splitting 90% to Hello version and 10% to Howdy version. Both are deployed to the same Kubernetes cluster.
