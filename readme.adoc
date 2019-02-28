@@ -1,3 +1,6 @@
 = Kubernetes for Java Developer
 
 Deploying your Java application in a Kubernetes cluster could feel like Alice in Wonderland. You keep going down the rabbit hole and don't know how to make that ride comfortable. This repository contains source code and instructions for a Lynda course that explains how a Java application can be deployed, tested, debugged and monitored in a Kubernetes cluster. In addition, it also talks about canary deployment and deployment pipeline.
+
+The content in this repo is explained at https://www.linkedin.com/learning/kubernetes-for-java-developers.
+
