@@ -16,7 +16,7 @@ spec:
       containers:
       - name: greeting
         image: {{ .Values.greeting.image }}:{{ .Values.image.howdyTag }}
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
           name: "http"
