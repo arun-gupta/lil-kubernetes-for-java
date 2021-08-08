@@ -192,6 +192,38 @@ If Helm has already been initialized on the cluster, then you may have to upgrad
 
 	helm reset --force
 
+== 3.9 Deploy Application to Kubernetes using Helm version 3 Charts
+
+**Code**
+
+. Install the Helm CLI:
+
+	brew install kubernetes-helm
++
+If Helm CLI is already installed then use `brew upgrade kubernetes-helm`.
++
+. Check Helm version:
+
+	helm version
+
+. Change to `manifests/charts` directory
+. Install the Helm chart:
+
+	helm install myapp ./myapp
+
+. Check that the resources are running:
+
+	kubectl get svc,deployment,pods
+
+. Access the application:
+
+	curl http://$(kubectl get svc/greeting \
+        -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+
+. Delete the Helm chart:
+
+	helm uninstall myapp
+
 == 3.10 Debug Kubernetes Deployment using IntelliJ
 
 **Code**

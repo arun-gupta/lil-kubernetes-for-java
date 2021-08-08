@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: greeting
+  name: {{ .Chart.Name }}
   labels:
-    name: greeting
+    name: {{ .Chart.Name }}
     {{- template "labels" . }}
 spec:
   selector:
-    app: greeting
+    app: {{ .Chart.Name }}
   ports:
   - name: http
     protocol: TCP
