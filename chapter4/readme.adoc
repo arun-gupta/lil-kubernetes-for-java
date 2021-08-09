@@ -132,3 +132,47 @@ It shows the port `8080` and `5005` are published and an Elastic Load Balancer i
 
 	helm delete --purge myapp
 
+== 4.3 Migrate Application to Kubernetes Cluster on AWS with Helm version 3
+
+**Code**
+
+. Explicitly set the context:
+
+    kubectl config use-context arun@k8s-course.us-west-2.eksctl.io
+
+. Check the list of pods:
+
+	kubectl get pods -n kube-system
+	NAME                            READY   STATUS    RESTARTS   AGE
+	aws-node-6h4r9                  1/1     Running   1          16m
+	aws-node-7rwkw                  1/1     Running   1          16m
+	aws-node-k9g6s                  1/1     Running   0          16m
+	aws-node-t6k6v                  1/1     Running   1          16m
+	kube-dns-64b69465b4-vpxjq       3/3     Running   0          23m
+	kube-proxy-bnkj6                1/1     Running   0          16m
+	kube-proxy-bqths                1/1     Running   0          16m
+	kube-proxy-m7ctf                1/1     Running   0          16m
+	kube-proxy-tszj5                1/1     Running   0          16m
+	tiller-deploy-895d57dd9-zt2s2   1/1     Running   0          7s
+
+. Redeploy the application:
+
+	helm install myapp manifests/charts/myapp
+
+. Get the service:
++
+	kubectl get svc
+	NAME         TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)                         AGE
+	greeting     LoadBalancer   10.100.110.146   a798a47cd104211e986290adde103247-521253658.us-west-2.elb.amazonaws.com   8080:31627/TCP,5005:30216/TCP   2m
+	kubernetes   ClusterIP      10.100.0.1       <none>                                                                   443/TCP                         18h
++
+It shows the port `8080` and `5005` are published and an Elastic Load Balancer is provisioned. It takes about three minutes for the load balancer to be ready.
++
+. Access the application:
+
+	curl http://$(kubectl get svc/greeting \
+		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+
+. Delete the application:
+
+	helm uninstall myapp

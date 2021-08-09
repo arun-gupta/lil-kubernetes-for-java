@@ -1,19 +1,22 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: greeting
+  name: {{ .Chart.Name }}
   labels:
-    name: greeting
+    name: {{ .Chart.Name }}
     {{- template "labels" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: greeting
+        app: {{ .Chart.Name }}
     spec:
       containers:
-      - name: greeting
+      - name: {{ .Chart.Name }}
         image: {{ .Values.greeting.image }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:

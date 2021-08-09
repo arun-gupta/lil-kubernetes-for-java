@@ -32,6 +32,14 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 		--namespace istio-system \
 		install/kubernetes/helm/istio
 
+. With Helm v3:
+
+	helm install \
+		istio \
+		install/kubernetes/helm/istio \
+		--wait \
+        --namespace istio-system
+
 . Verify the list of pods:
 
 	kubectl get pods -n istio-system
@@ -63,6 +71,10 @@ More details at https://aws.amazon.com/blogs/opensource/getting-started-istio-ek
 
   helm delete myapp --purge
   helm install --name myapp myapp-hello-howdy
+
+  #helm v3
+  helm uninstall myapp
+  helm install myapp myapp-hello-howdy
 +
 Note, there is no `type: LoadBalancer` in this case. The service will be exposed using Istio Ingress gateway so that Istio can do the traffic split.
 +
@@ -191,5 +203,7 @@ image::images/kiali-apps.png[]
 . Remove Istio
 
 	helm delete istio --purge
+    #helm v3
+    helm uninstall istio
 	kubectl delete -f install/kubernetes/helm/istio/templates/crds.yaml -n istio-system
 
