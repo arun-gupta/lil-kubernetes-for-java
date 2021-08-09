@@ -38,6 +38,9 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
 
 	helm delete myapp --purge
 
+    #helm v3
+	helm uninstall myapp
+
 . Download Skaffold:
 
 	brew install skaffold
@@ -51,6 +54,10 @@ https://github.com/GoogleContainerTools/skaffold[Skaffold] is a command line uti
     skaffold dev
 
 . Refresh the page in browser to see the output.
+
+. Remove the Skaffold resources from the application directory:
+
+    skaffold delete
 
 Same Java application, now continuously built through Skaffold and deployed to a local Kubernetes cluster. This can also be integrated with Jib. This can also be deployed to a remote Kubernetes cluster.
 
