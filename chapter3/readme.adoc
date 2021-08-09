@@ -273,3 +273,51 @@ image::images/docker-debug3.png[]
 
 	helm delete --purge myapp
 
+== 3.10 Debug Kubernetes Deployment using IntelliJ with Helm version 3
+
+**Code**
+
+You can debug a Kubernetes Pod if they're running on your machine.
+
+This was tested using Docker Desktop.
+
+. Install the Helm chart:
+
+	helm install myapp myapp
+
+. Show service:
++
+	$ kubectl get svc
+	NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
+	greeting     LoadBalancer   10.99.253.180   localhost     8080:30194/TCP,5005:31755/TCP   2m
+	kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP                         123d
++
+Highlight the debug port is also forwarded.
++
+. In IntelliJ, `Run`, `Debug`, `Remote`:
++
+image::images/docker-debug1.png[]
++
+. Click on `Debug`, setup a breakpoint in the class:
++
+image::images/docker-debug2.png[]
++
+Wait for about 10 seconds.
++
+. Access the application:
+
+	curl http://$(kubectl get svc/greeting \
+		-o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/hello
+
+. Show the breakpoint hit in IntelliJ:
++
+image::images/docker-debug3.png[]
++
+. Click on green button to continue execution
+. Invoke the application:
+
+	curl http://locahost:8080/hello
+
+. Delete the Helm chart:
+
+	helm uninstall myapp
